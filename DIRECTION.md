@@ -173,14 +173,10 @@ Direction, not prescription. The cycle invents inside these.
 ### Aesthetic
 - Color from a real source — pigments, paints, photographs of physical
   things, packaging, signage, fabric. Name the source in the kit.
-- Texture from the world the project is set in, never as default. A
-  doctor's clipboard wants paper and pencil; a control panel wants
-  brushed metal and warm indicator light; an arcade wants vacuum-formed
-  plastic and CRT phosphor; an aquarium wants glass and rippled water;
-  a kitchen wants enamel and ceramic; a workshop wants oxidized brass
-  and sawdust. Refuse defaulting to paper / halftone / riso / scanlines
-  unless the world genuinely calls for them — those have become the
-  AI-tasteful safe choice. Whatever serves; nothing decorative.
+- Texture from the world the project is set in, never as default.
+  Whatever the world's substrate actually is — derive it from the
+  spec's `world` and `fetish_object`, do not reach for a familiar
+  recipe. Nothing decorative.
 - Typography that signals position before it is read — italic display
   serif, hand-drawn caps, scanned wood-type, custom letterforms,
   monospace as voice not as fallback.

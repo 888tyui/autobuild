@@ -40,21 +40,16 @@ typography as CSS variables. Web Build will import this directly.
 
 1. Read the concept and spec. Internalize the "Refused" section —
    those are hard constraints for you.
-2. **Palette**: pick 5–7 hex codes. Name each one the way the concept
-   named its color sources — pigment, paint, photograph, signage,
-   enamel, fabric, light, metal, plastic, glass. Do not name them
-   "primary blue" or "neutral 800". Sample from references when
-   possible. Required: a foreground and a background. Strongly
-   recommended: one accent that breaks the rest, one quiet utility
-   tone, one alert tone if the project has states. The palette should
-   support the world the concept committed to — if the world is a
-   control panel, the palette comes from anodized aluminum, bakelite,
-   and indicator LEDs; if the world is an aquarium, it's tinted glass,
-   salt-rim white, and the green of algae; if the world is a kitchen,
-   it's enamel, copper, and the orange of a gas flame. Defaulting to
-   parchment / iron-gall / vellum / newsprint when the world is not a
-   printed thing has become the AI-tasteful safe answer; refuse it
-   unless the world genuinely lives on paper.
+2. **Palette**: pick 5–7 hex codes. Name each one after the *real
+   thing* in the project's world that the color comes from — the
+   actual material, paint, light source, signage, fabric, surface.
+   Do not name them by role ("primary", "neutral 800"). Sample from
+   the references where it helps. Required: a foreground and a
+   background. Strongly recommended: one accent that breaks the rest,
+   one quiet utility tone, one alert tone if the project has states.
+   The palette is derived from the world the concept committed to —
+   it should not be reusable across projects, and it should not reach
+   for a recipe you have used before.
 3. **Typography**: pick faces that the concept's voice demands. Default
    source `google` for ease unless the concept says self-hosted is
    needed. Specify weights actually used — not the full family.
@@ -85,13 +80,9 @@ typography as CSS variables. Web Build will import this directly.
 9. **Tokens file**: write `projects/{slug}/src/styles/brand-tokens.css`
    with CSS custom properties for the palette and a `@font-face` or
    Google Fonts `@import` block. Web Build imports this from the
-   global stylesheet. Name the variables descriptively, after the
-   actual material — examples (rotate per project, do not copy):
-   `--anodize-blue`, `--bakelite-cream`, `--indicator-led-amber`,
-   `--algae-spring-green`, `--enamel-cream`, `--neon-tube-pink`,
-   `--lacquer-vermillion`, `--phosphor-amber`, `--copper-patina`,
-   `--rubber-vulcanized`. Variables named after paper / ink / vellum
-   are only correct when the project actually lives on paper.
+   global stylesheet. Name each variable after the real-world source
+   it came from in *this* project — never by role, never by a recipe
+   reused from a previous cycle.
 10. Validate the kit JSON against the schema. Save.
 
 ## Rules
@@ -104,15 +95,10 @@ typography as CSS variables. Web Build will import this directly.
 - Color variable names use the *source* of the color, not its role.
   Web Build can map `--color-bg: var(--enamel-cream)` itself if
   it wants role aliases; do not pre-decide that.
-- The kit should not enable any of DIRECTION.md's anti-defaults. If
-  the natural Tailwind palette would land on hot-pink-to-blue
-  gradient territory, reject your own picks and try again.
-- The kit should not default to parchment / iron-gall / vellum /
-  newsprint texture and palette unless the world genuinely lives on
-  paper. That combination has been used; do not coast on it. If your
-  draft palette reaches for warm-yellow paper plus dark-sepia ink as
-  a starting point, stop and start from the world's actual substrate
-  instead.
+- The kit should not enable any of DIRECTION.md's anti-defaults.
+- Do not reach for textures or palettes you have used in a recent
+  cycle. If your draft palette feels familiar, the world is not yet
+  driving the picks — start over from the world's actual substrate.
 - If the Gemini tool generates the fetish object render, prompt in
   English with material, lighting, and environment from the concept.
   Do not prompt for "modern", "clean", or any generic adjective.

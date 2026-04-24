@@ -54,20 +54,16 @@ with its prompt, dimensions, and intended use.
    - The fetish object as the photographic/rendered subject when
      applicable
    - The world's environment, lighting, materials, and era
-   - The texture from the concept (whatever it actually is —
-     brushed steel, anodized aluminum, lacquer, ceramic, glass,
-     enamel, vinyl, CRT phosphor, neon glow, fabric, wax, oxidized
-     brass, kitchen tile, vacuum plastic, sand, water, fog, ink on
-     paper. Paper-and-ink is one possibility, not the default)
+   - The texture from the concept (whatever the world's substrate
+     actually is — derive from the spec's `world` and `fetish_object`,
+     do not reach for a familiar recipe)
    - The feeling from the spec, translated into composition
      (close, far, cold light, warm light, low angle, top-down, etc.)
    - Negative cues: avoid stock-3D-blob, avoid generic gradient
      hero, avoid AI-generic glassmorphism, avoid floating phones
      with screenshot UIs, avoid "team-of-diverse-people-collaborating"
      stock-photography, avoid neon-on-black "cypherpunk" defaults,
-     avoid defaulting to parchment / vellum / aged-paper / iron-gall
-     ink unless the project's world genuinely lives on paper (this
-     has become the AI-tasteful safe answer)
+     avoid any texture or aesthetic you have used in a recent cycle
 3. Use the Gemini tool per CLAUDE.md:
    ```
    node ~/.claude/tools/gemini-image/generate.mjs \

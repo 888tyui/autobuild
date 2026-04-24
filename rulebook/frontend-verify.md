@@ -73,10 +73,9 @@ These are the same four questions DIRECTION.md asks, applied to the
 
 ### Brand alignment
 - Brand tokens CSS file imported in `src/app/globals.css`.
-- Source-named colors from the kit (e.g. `--anodize-blue`,
-  `--enamel-cream`, `--phosphor-amber` — names should match the
-  project's actual material palette, not always paper) are actually
-  consumed in components. No hardcoded hex.
+- Source-named colors from the kit (named after the project's actual
+  materials, not by role) are actually consumed in components. No
+  hardcoded hex.
 - Typography matches the kit's faces and weights.
 - The fetish object from the kit appears in the site at least twice,
   in deliberate compositions — not as a tiny icon, not only as a
@@ -129,14 +128,13 @@ inside it.
   identity. (If the concept *committed* to this and the site has
   another distinctive move that lifts it, soft-note it; otherwise
   REJECT.)
-- Parchment / vellum / aged-paper background with sepia / iron-gall
-  / handwritten-style typography when the project's `world` is NOT a
-  manuscript / journal / printed thing. The paper-and-ink aesthetic
-  has become the AI-tasteful safe choice; it should appear only when
-  the world genuinely lives on paper. If the world is e.g. a control
-  panel, an aquarium, a kitchen, a press kit, or a workshop, but the
-  page reads as parchment-with-warm-serif, REJECT — the world is not
+- The site's overall texture / palette / type voice does not match
+  the spec's `world`. If the world is e.g. a control panel but the
+  page reads like an editorial magazine, REJECT — the world is not
   being honored.
+- The site's aesthetic closely resembles a recent prior cycle's site
+  (texture, palette family, type pairing). The Branding agent is
+  required to diverge across cycles; if it didn't, REJECT.
 - Purple-to-pink, blue-to-cyan, or any other gradient as the
   primary visual identity rather than as a deliberate single accent.
 - Glassmorphism (translucent blurred panels) used decoratively.
