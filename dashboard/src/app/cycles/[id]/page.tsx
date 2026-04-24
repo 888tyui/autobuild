@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
 import { api, type CycleDetail, type Status } from '@/lib/api'
 import { fmtBytes, fmtDateTime, fmtRelative } from '@/lib/format'
-import { DevServerControl } from '@/components/DevServerControl'
 import { DeployControl } from '@/components/DeployControl'
 import { CodebaseControl } from '@/components/CodebaseControl'
 
@@ -103,6 +102,8 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
   if (error) return <div className="empty">cycle unreachable: {error}</div>
   if (!detail) return <div className="empty">loading…</div>
 
+  const heroImg = detail.preview_image ? `${api.apiBase}${detail.preview_image}` : null
+
   return (
     <>
       <div className="crumbs">
@@ -113,48 +114,80 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
         <span style={{ color: 'var(--text)' }}>{detail.project_id}</span>
       </div>
 
-      <div className="section-head">
-        <h1>{detail.name ?? detail.project_id}</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {live && (
-            <span className="pill info">
-              live {live.current_stage ? `· ${live.current_stage.label}` : ''}
+      <div className="detail-hero">
+        <div className="detail-hero-media">
+          {heroImg ? (
+            <img src={heroImg} alt="" />
+          ) : (
+            <div className="project-card-placeholder">
+              <span className="mono" style={{ color: 'var(--text-faint)', fontSize: 11 }}>no preview</span>
+            </div>
+          )}
+        </div>
+        <div className="detail-hero-body">
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <StatusPill status={detail.status} />
+            {detail.cycle_mode && <span className="pill mute">{detail.cycle_mode}</span>}
+            {live && (
+              <span className="pill info">
+                <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', background: 'currentColor', marginRight: 6, verticalAlign: 1 }} />
+                live{live.current_stage ? ` · ${live.current_stage.label}` : ''}
+              </span>
+            )}
+          </div>
+          <h1 className="detail-hero-title">{detail.name ?? detail.project_id}</h1>
+          {detail.one_liner && <p className="detail-hero-oneliner">{detail.one_liner}</p>}
+
+          <div className="detail-hero-links">
+            {detail.deploy_url && (
+              <a
+                href={detail.deploy_url}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="action-link ok"
+              >
+                Live ↗
+              </a>
+            )}
+            {detail.codebase_url && (
+              <a
+                href={detail.codebase_url}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="action-link info"
+              >
+                Code
+                {detail.codebase_language ? ` · ${detail.codebase_language}` : ''} ↗
+              </a>
+            )}
+            {live?.cancellable && !live.cancel_requested && (
+              <button className="btn" onClick={handleCancel} disabled={cancelling}>
+                {cancelling ? '…' : '✕ cancel cycle'}
+              </button>
+            )}
+            {live?.cancel_requested && <span className="pill warn">cancelling…</span>}
+            {!live && (
+              <button
+                className="btn"
+                onClick={handleDelete}
+                disabled={deleting}
+                style={{ borderColor: 'var(--bad)', color: 'var(--bad)' }}
+                title="Delete this cycle's state and built project (irreversible)"
+              >
+                {deleting ? '…' : '🗑 delete'}
+              </button>
+            )}
+            <span className="meta" style={{ color: 'var(--text-faint)', fontFamily: 'var(--mono)', fontSize: 11, marginLeft: 'auto' }}>
+              {fmtRelative(detail.last_activity_iso)}
             </span>
-          )}
-          {live?.cancellable && !live.cancel_requested && (
-            <button className="btn" onClick={handleCancel} disabled={cancelling}>
-              {cancelling ? '…' : '✕ cancel cycle'}
-            </button>
-          )}
-          {live?.cancel_requested && <span className="pill warn">cancelling…</span>}
-          {!live && (
-            <button
-              className="btn"
-              onClick={handleDelete}
-              disabled={deleting}
-              style={{ borderColor: 'var(--bad)', color: 'var(--bad)' }}
-              title="Delete this cycle's state and built project (irreversible)"
-            >
-              {deleting ? '…' : '🗑 delete'}
-            </button>
-          )}
-          <span className="meta">{fmtRelative(detail.last_activity_iso)}</span>
+          </div>
         </div>
       </div>
 
       {detail.project_path && (
         <>
           <div className="card" style={{ marginBottom: 24 }}>
-            <h2>Dev server / Deploy</h2>
-            <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
-              <span style={{ color: 'var(--text-faint)', fontFamily: 'var(--mono)', fontSize: 11 }}>
-                dev:
-              </span>
-              <DevServerControl projectId={detail.project_id} hasProject={true} />
-              <span style={{ color: 'var(--text-faint)', fontFamily: 'var(--mono)', fontSize: 11 }}>
-                project at <span style={{ color: 'var(--text)' }}>{detail.project_path}</span>
-              </span>
-            </div>
+            <h2>Railway deploy</h2>
             <DeployControl projectId={detail.project_id} hasProject={true} />
           </div>
 
@@ -171,20 +204,12 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
           <dl className="kv">
             <dt>project_id</dt>
             <dd className="mono">{detail.project_id}</dd>
-            <dt>name</dt>
-            <dd>{detail.name ?? '—'}</dd>
             <dt>slug</dt>
             <dd className="mono">{detail.slug ?? '—'}</dd>
-            <dt>one-liner</dt>
-            <dd>{detail.one_liner ?? '—'}</dd>
             <dt>fetish object</dt>
             <dd>{detail.fetish_object ?? '—'}</dd>
             <dt>world</dt>
             <dd>{detail.world ?? '—'}</dd>
-            <dt>cycle mode</dt>
-            <dd className="mono">{detail.cycle_mode ?? '—'}</dd>
-            <dt>status</dt>
-            <dd><StatusPill status={detail.status} /></dd>
             {detail.rejection_trigger && (
               <>
                 <dt>rejection</dt>
@@ -203,7 +228,7 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
             )}
             {detail.project_path && (
               <>
-                <dt>project</dt>
+                <dt>project path</dt>
                 <dd className="mono">{detail.project_path}</dd>
               </>
             )}

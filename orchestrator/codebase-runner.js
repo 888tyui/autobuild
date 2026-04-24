@@ -118,6 +118,27 @@ async function runCodebaseAgent(entry) {
   entry.finished_at = new Date().toISOString()
   entry.status = entry.repo_url || entry.commit_count ? 'success' : 'finished'
   log.ok(`codebase ${entry.status} project_id=${entry.project_id} repo=${entry.repo_url ?? 'local-only'}`)
+  const persistPath = path.join(STATE_DIR, entry.project_id, 'codebase.json')
+  try {
+    await fs.writeFile(persistPath, JSON.stringify(summarize(entry), null, 2), 'utf8')
+  } catch (err) {
+    log.warn(`failed to persist codebase.json: ${err.message}`)
+  }
+}
+
+export async function runCodebaseToCompletion({ projectId }) {
+  const existing = codebases.get(projectId)
+  if (existing && existing.status === 'running') {
+    while (codebases.get(projectId)?.status === 'running') {
+      await new Promise((r) => setTimeout(r, 1500))
+    }
+    return summarize(codebases.get(projectId))
+  }
+  await startCodebase({ projectId })
+  while (codebases.get(projectId)?.status === 'running') {
+    await new Promise((r) => setTimeout(r, 1500))
+  }
+  return summarize(codebases.get(projectId))
 }
 
 function buildPrompt(entry) {

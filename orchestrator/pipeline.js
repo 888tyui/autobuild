@@ -7,6 +7,8 @@ import {
   finishStage,
   endCycle,
 } from './utils/status-store.js'
+import { runDeployToCompletion } from './deploy-runner.js'
+import { runCodebaseToCompletion } from './codebase-runner.js'
 
 const log = createLogger('pipeline')
 
@@ -22,7 +24,10 @@ function makeStages(mode) {
     { kind: 'parallel', agents: ['web-build', 'product'] },
     { kind: 'gate', agent: 'frontend-verify' },
     { kind: 'single', agent: 'cm' },
-    { kind: 'single', agent: 'codebase' },
+    // Post-cycle best-effort stages. Failure is logged but does not
+    // mark the cycle as failed; the cycle is already past its gates.
+    { kind: 'soft', runner: 'deploy' },
+    { kind: 'soft', runner: 'codebase' },
   ]
 }
 
@@ -56,7 +61,10 @@ export async function runPipeline(ctx) {
 
   for (const [i, stage] of stages.entries()) {
     const tag = `${i + 1}/${stages.length}`
-    const stageLabel = stage.kind === 'parallel' ? stage.agents.join(' ‖ ') : stage.agent
+    let stageLabel
+    if (stage.kind === 'parallel') stageLabel = stage.agents.join(' ‖ ')
+    else if (stage.kind === 'soft') stageLabel = stage.runner
+    else stageLabel = stage.agent
 
     if (isAborted(ctx)) {
       log.warn(`pipeline aborted before stage ${tag}`)
@@ -107,6 +115,28 @@ export async function runPipeline(ctx) {
         return finish({ status: 'failed', stage: tag, failures: failures.map((f) => String(f.reason)) })
       }
       if (!ctx.dryRun) await finishStage({ projectId: ctx.projectId, stageLabel, status: 'ok', elapsed_s: stageElapsed })
+    } else if (stage.kind === 'soft') {
+      log.info(`stage ${tag} soft: ${stage.runner}`)
+      if (ctx.dryRun) {
+        log.info(`[dry-run] would invoke ${stage.runner}-runner`)
+        continue
+      }
+      try {
+        if (stage.runner === 'deploy') {
+          await runDeployToCompletion({ projectId: ctx.projectId })
+        } else if (stage.runner === 'codebase') {
+          await runCodebaseToCompletion({ projectId: ctx.projectId })
+        } else {
+          throw new Error(`unknown soft runner: ${stage.runner}`)
+        }
+        const stageElapsed = ((Date.now() - stageStartedAt) / 1000).toFixed(1)
+        await finishStage({ projectId: ctx.projectId, stageLabel, status: 'ok', elapsed_s: stageElapsed })
+      } catch (err) {
+        const stageElapsed = ((Date.now() - stageStartedAt) / 1000).toFixed(1)
+        log.warn(`soft stage ${stage.runner} failed (cycle continues): ${err.message}`)
+        await appendCycleLog(ctx, `SOFT FAIL ${stage.runner}: ${err.message}`)
+        await finishStage({ projectId: ctx.projectId, stageLabel, status: 'failed', elapsed_s: stageElapsed })
+      }
     } else {
       log.info(`stage ${tag} ${stage.kind}: ${stage.agent}`)
       try {

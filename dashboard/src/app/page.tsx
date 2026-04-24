@@ -6,7 +6,7 @@ import { api, type Status, type CycleSummary } from '@/lib/api'
 import { fmtDateTime, fmtRelative } from '@/lib/format'
 import { CycleProgress } from '@/components/CycleProgress'
 import { Controls } from '@/components/Controls'
-import { DevServerControl } from '@/components/DevServerControl'
+import { ProjectCard } from '@/components/ProjectCard'
 
 export default function OverviewPage() {
   const [status, setStatus] = useState<Status | null>(null)
@@ -52,14 +52,19 @@ export default function OverviewPage() {
   const rejected = cycles.filter((c) => c.status === 'rejected').length
   const inProgress = cycles.filter((c) => c.status === 'in-progress').length
   const stalled = cycles.filter((c) => c.status === 'stalled').length
+  const deployed = cycles.filter((c) => c.deploy_url).length
+
+  const recent = cycles.slice(0, 9)
+  const featured = cycles.filter((c) => c.deploy_url).slice(0, 6)
 
   return (
     <>
-      <div className="section-head">
-        <h1>Overview</h1>
-        <span className="meta">
-          updated {fmtRelative(status.updated_at)}
-        </span>
+      <div className="overview-hero">
+        <h1>Control</h1>
+        <p>
+          An always-on product factory. Each cycle runs an eleven-stage Claude Opus 4.7 pipeline,
+          ships a working site with a Railway deploy, and opens a companion codebase repo.
+        </p>
       </div>
 
       <div className="card" style={{ marginBottom: 24 }}>
@@ -82,36 +87,67 @@ export default function OverviewPage() {
         )}
       </div>
 
-      <div className="row row-3" style={{ marginBottom: 24 }}>
-        <div className="card">
-          <h2>Completed</h2>
+      <div className="stat-row">
+        <div className="stat-card">
+          <h2 style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14, fontWeight: 500 }}>
+            Completed
+          </h2>
           <div className="stat">{completed}</div>
           <div className="stat-sub">passed both gates</div>
         </div>
-        <div className="card">
-          <h2>Rejected</h2>
-          <div className="stat" style={{ color: 'var(--warn)' }}>{rejected}</div>
-          <div className="stat-sub">failed verify or frontend-verify</div>
+        <div className="stat-card info">
+          <h2 style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14, fontWeight: 500 }}>
+            Deployed
+          </h2>
+          <div className="stat" style={{ color: 'var(--info)' }}>{deployed}</div>
+          <div className="stat-sub">live on Railway</div>
         </div>
-        <div className="card">
-          <h2>In-flight / stalled</h2>
-          <div className="stat" style={{ color: 'var(--info)' }}>
-            {inProgress + stalled}
+        <div className="stat-card warn">
+          <h2 style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14, fontWeight: 500 }}>
+            Rejected
+          </h2>
+          <div className="stat" style={{ color: 'var(--warn)' }}>{rejected}</div>
+          <div className="stat-sub">failed a gate</div>
+        </div>
+        <div className="stat-card bad">
+          <h2 style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-faint)', marginBottom: 14, fontWeight: 500 }}>
+            In-flight · stalled
+          </h2>
+          <div className="stat">
+            {inProgress}
+            <span style={{ color: 'var(--text-faint)', fontSize: 24, fontWeight: 400 }}> · {stalled}</span>
           </div>
-          <div className="stat-sub">
-            {inProgress} live, {stalled} stalled
-          </div>
+          <div className="stat-sub">live vs abandoned</div>
         </div>
       </div>
 
-      <div className="section-head">
-        <h1>Recent cycles</h1>
+      {featured.length > 0 && (
+        <>
+          <div className="section-head lg">
+            <h1>Shipped</h1>
+            <span className="meta">{featured.length} live</span>
+          </div>
+          <div className="project-grid" style={{ marginBottom: 32 }}>
+            {featured.map((c) => (
+              <ProjectCard key={c.project_id} c={c} />
+            ))}
+          </div>
+        </>
+      )}
+
+      <div className="section-head lg">
+        <h1>Recent</h1>
         <Link href="/cycles" className="btn btn-ghost">view all →</Link>
       </div>
-
-      <div className="card" style={{ padding: 0 }}>
-        <RecentCyclesTable cycles={cycles.slice(0, 8)} />
-      </div>
+      {recent.length === 0 ? (
+        <div className="card empty">no cycles yet</div>
+      ) : (
+        <div className="project-grid">
+          {recent.map((c) => (
+            <ProjectCard key={c.project_id} c={c} />
+          ))}
+        </div>
+      )}
 
       {status.last_result && (
         <>
@@ -142,75 +178,6 @@ export default function OverviewPage() {
       )}
     </>
   )
-}
-
-function RecentCyclesTable({ cycles }: { cycles: CycleSummary[] }) {
-  if (cycles.length === 0) {
-    return <div className="empty">no cycles yet</div>
-  }
-  return (
-    <table className="table">
-      <thead>
-        <tr>
-          <th>cycle</th>
-          <th>name</th>
-          <th>mode</th>
-          <th>status</th>
-          <th>activity</th>
-          <th>dev</th>
-        </tr>
-      </thead>
-      <tbody>
-        {cycles.map((c) => (
-          <tr key={c.project_id}>
-            <td>
-              <Link href={`/cycles/${c.project_id}`} className="mono" style={{ color: 'var(--text)' }}>
-                {c.project_id}
-              </Link>
-            </td>
-            <td>
-              <div className="truncate">{c.name ?? <em style={{ color: 'var(--text-faint)' }}>—</em>}</div>
-              <div className="truncate" style={{ color: 'var(--text-dim)', fontSize: 12 }}>
-                {c.one_liner ?? ''}
-              </div>
-            </td>
-            <td className="mono" style={{ color: 'var(--text-dim)', fontSize: 12 }}>
-              {c.cycle_mode ?? '—'}
-            </td>
-            <td>
-              <StatusPill status={c.status} />
-              {c.rejection_trigger && (
-                <div style={{ color: 'var(--text-faint)', fontFamily: 'var(--mono)', fontSize: 11, marginTop: 4 }}>
-                  {c.rejection_trigger}
-                </div>
-              )}
-            </td>
-            <td className="mono" style={{ color: 'var(--text-dim)', fontSize: 12 }}>
-              {fmtRelative(c.last_activity_iso)}
-            </td>
-            <td>
-              {c.slug ? (
-                <DevServerControl projectId={c.project_id} hasProject={true} compact />
-              ) : (
-                <span className="pill mute">—</span>
-              )}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
-}
-
-function StatusPill({ status }: { status: CycleSummary['status'] }) {
-  const map: Record<CycleSummary['status'], string> = {
-    completed: 'ok',
-    rejected: 'warn',
-    cancelled: 'mute',
-    'in-progress': 'info',
-    stalled: 'bad',
-  }
-  return <span className={`pill ${map[status]}`}>{status}</span>
 }
 
 function ResultPill({ status }: { status: string }) {

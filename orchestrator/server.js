@@ -19,12 +19,6 @@ import { URL } from 'node:url'
 import { ROOT_DIR } from './utils/context.js'
 import { readStatus, setMode, listActiveCycleIds } from './utils/status-store.js'
 import {
-  startDevServer,
-  stopDevServer,
-  getDevServer,
-  listDevServers,
-} from './dev-server-manager.js'
-import {
   startDeploy,
   getDeployStatus,
   cancelDeploy,
@@ -122,6 +116,16 @@ async function summarizeCycle(projectId, dir) {
     humanReview = await safeReadJson(path.join(dir, 'human-review.json'))
   }
 
+  let deployInfo = null
+  if (has('deploy.json')) {
+    deployInfo = await safeReadJson(path.join(dir, 'deploy.json'))
+  }
+
+  let codebaseInfo = null
+  if (has('codebase.json')) {
+    codebaseInfo = await safeReadJson(path.join(dir, 'codebase.json'))
+  }
+
   let mode = null
   if (has('imagine-report.json')) mode = 'experimental'
   else if (has('search-report.json')) mode = 'trend'
@@ -164,6 +168,26 @@ async function summarizeCycle(projectId, dir) {
     if (startLines.length) lastStage = startLines[startLines.length - 1]
   }
 
+  // Detect a hero image we can preview in the dashboard.
+  let preview_image = null
+  if (spec?.slug) {
+    const slug = spec.slug
+    // Path is verified by the static handler; we just announce candidates.
+    const candidates = ['public/images/og.png', 'public/images/hero.png']
+    for (const c of candidates) {
+      const fp = path.join(ROOT_DIR, 'projects', slug, c)
+      try {
+        const st = await fs.stat(fp)
+        if (st.isFile() && st.size > 0) {
+          preview_image = `/static/projects/${slug}/${c}`
+          break
+        }
+      } catch {
+        /* try next */
+      }
+    }
+  }
+
   return {
     project_id: projectId,
     cycle_mode: mode,
@@ -179,6 +203,11 @@ async function summarizeCycle(projectId, dir) {
     rejection_stage: rejection?.stage ?? null,
     has_human_review: !!humanReview,
     human_score: humanReview?.score ?? null,
+    deploy_url: deployInfo?.url ?? null,
+    deploy_status: deployInfo?.status ?? null,
+    codebase_url: codebaseInfo?.repo_url ?? null,
+    codebase_language: codebaseInfo?.language ?? null,
+    preview_image,
   }
 }
 
@@ -313,6 +342,38 @@ export function startServer({ port }) {
     try {
       if (p === '/healthz') return text(res, 200, 'ok')
 
+      // Static project asset serving — the dashboard fetches preview
+      // images and other assets via this route. Path-traversal guarded.
+      const staticMatch = p.match(/^\/static\/projects\/([^/]+)\/(.+)$/)
+      if (staticMatch && req.method === 'GET') {
+        const slug = staticMatch[1]
+        const rel = staticMatch[2]
+        if (!/^[a-z0-9-]+$/.test(slug)) return json(res, 400, { error: 'invalid slug' })
+        const projDir = path.join(ROOT_DIR, 'projects', slug)
+        const target = path.resolve(projDir, rel)
+        const within = path.relative(projDir, target)
+        if (within.startsWith('..') || path.isAbsolute(within)) {
+          return json(res, 400, { error: 'path traversal' })
+        }
+        try {
+          const data = await fs.readFile(target)
+          const ext = path.extname(target).toLowerCase()
+          const ct = ext === '.png' ? 'image/png'
+            : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
+            : ext === '.svg' ? 'image/svg+xml'
+            : ext === '.webp' ? 'image/webp'
+            : 'application/octet-stream'
+          res.writeHead(200, {
+            'Content-Type': ct,
+            'Cache-Control': 'public, max-age=300',
+            'Access-Control-Allow-Origin': '*',
+          })
+          return res.end(data)
+        } catch {
+          return json(res, 404, { error: 'asset not found' })
+        }
+      }
+
       if (p === '/api/status' && req.method === 'GET') {
         const status = await readStatus()
         return json(res, 200, status ?? { error: 'no status yet' })
@@ -369,39 +430,6 @@ export function startServer({ port }) {
         const result = await cancelHandler({ projectId })
         if (!result.cancelled) return json(res, 404, { error: 'cycle not active or not cancellable' })
         return json(res, 202, result)
-      }
-
-      // Dev server controls — start, status, stop per cycle
-      const devMatch = p.match(/^\/api\/cycles\/([^/]+)\/dev-server$/)
-      if (devMatch) {
-        const projectId = devMatch[1]
-        if (!PROJECT_ID_RE.test(projectId)) return json(res, 400, { error: 'invalid project_id' })
-
-        if (req.method === 'POST') {
-          // Need slug — read it from the cycle's spec
-          const spec = await safeReadJson(path.join(STATE_DIR, projectId, 'project-spec.json'))
-          const slug = spec?.slug
-          if (!slug) return json(res, 400, { error: 'cycle has no slug — nothing to run' })
-          try {
-            const entry = await startDevServer({ projectId, slug })
-            return json(res, 202, entry)
-          } catch (err) {
-            return json(res, 500, { error: err.message })
-          }
-        }
-        if (req.method === 'GET') {
-          const entry = getDevServer(projectId)
-          if (!entry) return json(res, 404, { error: 'not running' })
-          return json(res, 200, entry)
-        }
-        if (req.method === 'DELETE') {
-          const result = await stopDevServer({ projectId })
-          return json(res, 200, result)
-        }
-      }
-
-      if (p === '/api/dev-servers' && req.method === 'GET') {
-        return json(res, 200, { dev_servers: listDevServers() })
       }
 
       // Deploy controls

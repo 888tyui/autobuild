@@ -125,6 +125,31 @@ async function runDeployAgent(entry) {
   else if (entry.final_status_word) entry.status = entry.final_status_word
   else entry.status = 'finished'
   log.ok(`deploy ${entry.status} project_id=${entry.project_id} url=${entry.url ?? 'none'}`)
+  // Persist so the summary survives orchestrator restart.
+  const persistPath = path.join(STATE_DIR, entry.project_id, 'deploy.json')
+  try {
+    await fs.writeFile(persistPath, JSON.stringify(summarize(entry), null, 2), 'utf8')
+  } catch (err) {
+    log.warn(`failed to persist deploy.json: ${err.message}`)
+  }
+}
+
+export async function runDeployToCompletion({ projectId }) {
+  // Used by the pipeline — starts the deploy and awaits the runner's
+  // async work synchronously. Returns the final summary.
+  const existing = deploys.get(projectId)
+  if (existing && existing.status === 'running') {
+    // Wait for it to finish if already running.
+    while (deploys.get(projectId)?.status === 'running') {
+      await new Promise((r) => setTimeout(r, 1500))
+    }
+    return summarize(deploys.get(projectId))
+  }
+  await startDeploy({ projectId })
+  while (deploys.get(projectId)?.status === 'running') {
+    await new Promise((r) => setTimeout(r, 1500))
+  }
+  return summarize(deploys.get(projectId))
 }
 
 function buildDeployPrompt(entry) {
