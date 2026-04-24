@@ -24,19 +24,17 @@ auto-reject — the project is not yet directable.
 
 - **`feeling`** must be a sentence that names emotional weather, not a
   feature. Generic adjectives ("modern", "clean", "powerful",
-  "innovative", "professional") fail. "A held breath at 3am" passes.
+  "innovative", "professional") fail.
 - **`fetish_object.name`** must be specific enough to photograph or
-  render. "A graph", "the future", "a token" fail. "A 1970s field
-  anemometer", "an X-ray sheet pinned to a lightbox" pass.
+  render. Abstract concepts ("a graph", "the future") fail.
 - **`fetish_object.description`** must explain why this object carries
   the brand — not just what it looks like.
-- **`world.name`** must be a place, premise, or fiction. "Dashboard",
-  "landing page", "app" fail. "A doctor's clipboard", "a press
-  proof", "a control panel" pass.
+- **`world.name`** must be a place, premise, or fiction — not a
+  product-shaped category ("dashboard", "landing page", "app" fail).
 - **`world.premise`** must describe the conventions of that world the
   site will honor. Vague aspirational copy fails.
 - **`single_takeaway`** must be concrete enough to repeat to a friend
-  without the URL. Generic adjectives or "the design" fail.
+  without the URL. Generic adjectives fail.
 
 If any field is generic, vague, or missing, REJECT with trigger
 `weak-direction-{field}` and ask the next cycle to push harder on the

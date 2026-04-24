@@ -57,48 +57,37 @@ step into a fiction, not read a pitch.
    `PhantomWalletAdapter`, `SolflareWalletAdapter`,
    `BackpackWalletAdapter`. The connect button should *belong to the
    site's world* — not be the default modal trigger styled with the
-   brand color. If the site is a clipboard, the connect button looks
-   like a clipboard action; if a press proof, like a press control.
+   brand color.
 5. **Pages**: build only the routes the core loop demands. Do not
    add About, Contact, FAQ, Blog, or any route the spec did not
    request. The spec is the scope.
 6. **Composition**: do not start from the SaaS landing page template.
    Start from the world's premise. Ask: in this world, what does an
-   *opening page* look like? A magazine front? A clipboard pinned to
-   a wall? A press proof page 001? A control panel? Build *that*.
-   The hero in the autobuild sense is the answer to that question,
-   not "a headline + a side mockup".
+   *opening page* look like? Build *that*. The hero in the autobuild
+   sense is the answer to that question, not "a headline + a side
+   mockup".
 7. **Fetish object**: the kit gave you renders of the fetish object.
    Use them. The object should appear at least twice across the
    site, in deliberate compositions. It is the brand's recurring
    motif — not a decoration, not an icon set replacement.
 8. **Diegetic chrome**: add to the page the metadata that belongs
-   to the world. Time stamp, coordinates, version, status dot, slug
-   line, page number, ledger entry, registration mark, type-spec
-   label — whichever the world implies. These are *part of the
-   design*, not afterthoughts.
+   to the world — whatever it is. These are *part of the design*,
+   not afterthoughts.
 9. **External presence (Twitter / Token / Docs)**: every project
    ships with the standard external link cluster from
    `spec.external_links`. **Do not render them as a default
    top-right SaaS nav cluster** (the `Twitter | Discord | Docs`
-   pattern is forbidden). Instead, integrate them *in the world*:
-   - As colophon entries appended to the manuscript footer
-   - As marginal notations alongside the relevant page
-   - As entries in a dedicated cards stack styled like the world
-   - As a sidebar indicator in the world's chrome
-   - As deep details inside an "About" / `/docs` page
-   The Twitter handle, token CA (if present), and docs link must be
-   discoverable from the home page within one screen of scrolling.
-   If `spec.external_links.token` is omitted, do not invent a token
-   link — the project simply has none. The Docs link, when `kind:
-   internal`, requires you to also build a `/docs` route in the
-   world's voice (a manuscript chapter, a control-panel reference
-   card, a pamphlet — whatever the world demands).
+   pattern is forbidden). Integrate them *in the world*, in whatever
+   form the world demands. The Twitter handle, token CA (if present),
+   and docs link must be discoverable from the home page within one
+   screen of scrolling. If `spec.external_links.token` is omitted,
+   do not invent a token link — the project simply has none. The Docs
+   link, when `kind: internal`, requires you to also build a `/docs`
+   route in the world's voice.
 10. **Connected wallet state**: when a wallet is connected, the UI
     must visibly change — and the change must belong to the world.
-    The connected address fits inside the world (a stamp on the
-    clipboard, a serial on the press proof, a callsign on the control
-    panel) — never just a truncated address in the header.
+    The connected address must integrate into the world's own
+    vocabulary — never just a truncated address in the header.
 11. **Empty + loading states** for any list/grid/async fetch. Real
     copy from the brand voice, not "Loading...".
 12. **Metadata**: real `<title>`, `<meta description>`, OG tags

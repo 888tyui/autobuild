@@ -62,20 +62,18 @@ not a menu of options. The project must be a single buildable thing.
    These are not afterthoughts. They drive the whole brief.
    - `feeling`: what the product *feels like to use* in one sentence.
      Not what it does. The emotional weather. Specific, not vague.
-     "Anxious" beats "modern". "A held breath at 3am" beats "anxious".
+     Generic adjectives ("modern", "clean", "powerful") fail.
    - `fetish_object`: a single physical thing the brand returns to.
-     A device, an artifact, a tool, a piece of furniture, a
-     photograph. Must be photograph-able or render-able. Abstract
-     concepts ("a graph", "the future") are not allowed. Specific,
-     historical, or invented-but-physical objects only.
+     Must be photograph-able or render-able. Abstract concepts ("a
+     graph", "the future") are not allowed.
    - `world`: the premise the site is set in. Not its aesthetic — its
-     fiction. A press proof. A doctor's clipboard. A control panel.
-     A library card catalog. A magazine spread. A factory floor.
-     The site will *be* this; it will not *describe* it.
+     fiction. The site will *be* this; it will not *describe* it.
+     Product-shaped categories ("dashboard", "landing page", "app")
+     fail.
    - `single_takeaway`: the one thing the visitor remembers after
-     closing the tab. If your draft says "the design", "it was clean",
-     or any generic adjective, throw it out and try again. The right
-     answer is concrete enough to repeat to a friend without the URL.
+     closing the tab. Generic adjectives or "the design" fail. The
+     right answer is concrete enough to repeat to a friend without
+     the URL.
 6. Build out the rest of the spec. Required fields are non-optional.
 7. For `prior_art`, find ≥3 real comparables with URLs you fetched
    (not guessed). Each `how_we_differ` must be a concrete mechanic,

@@ -61,10 +61,10 @@ collect visual references, then write
 
 ## Rules
 
-- Do not query for aesthetic categories. Query for the *contents of
-  the world*. "anemometer in field" beats "industrial design".
-  "X-ray sheet pinned to a lightbox" beats "medical aesthetic".
-  "1970s field journal" beats "vintage paper texture".
+- Do not query for aesthetic categories ("cypherpunk web design",
+  "minimalist crypto branding", "vintage paper texture"). Query for
+  the *contents of the world* — the actual things in the spec's
+  fetish object and world.
 - You drive the scraper. You do not browse manually. If the scraper
   is unavailable, write `references/queries.json` with your queries
   and exit cleanly — the pipeline treats this as a deferred stage.

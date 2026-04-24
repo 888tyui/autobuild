@@ -26,10 +26,9 @@ These are the same four questions DIRECTION.md asks, applied to the
 *built page*. Walk the routes. Then answer:
 
 1. **Did this site become its world, or does it explain its world?**
-   The spec named a `world` (e.g. "a doctor's clipboard", "a press
-   proof"). Did the page step into that fiction, or did it produce a
-   marketing description of it? If the world is named in copy but the
-   layout is still a SaaS landing page, REJECT.
+   The spec named a `world`. Did the page step into that fiction, or
+   did it produce a marketing description of it? If the world is named
+   in copy but the layout is still a SaaS landing page, REJECT.
 
 2. **What is the one thing they would describe to a friend?**
    Imagine a stranger closes the tab. What do they tell someone? If
@@ -67,8 +66,7 @@ These are the same four questions DIRECTION.md asks, applied to the
   Solflare, Backpack at minimum — never Ledger / hardware-USB per
   CLAUDE.md).
 - Connected state actually changes the UI in a way that *belongs to
-  the world* (a stamp on the clipboard, a serial on the press proof,
-  a callsign on the control panel — never just a header address).
+  the world* — never just a truncated address in the header.
 - Disconnect works.
 
 ### Brand alignment
@@ -91,8 +89,7 @@ These are the same four questions DIRECTION.md asks, applied to the
   internal`, the `/docs` route exists and is voiced in-world.
 - **Anti-default**: a top-right `Twitter | Discord | Docs` cluster
   with default link styling is forbidden. The links must integrate
-  into the world (colophon, marginalia, sidebar, dedicated card
-  stack). REJECT on default-cluster pattern.
+  into the world's own vocabulary. REJECT on default-cluster pattern.
 
 ## Structural anti-defaults (any single match = REJECT)
 
@@ -119,8 +116,7 @@ inside it.
   if > 3000 and the world doesn't *demand* the length, REJECT.)
 - Section after section divided by the same horizontal rule.
 - A nav with logo-left, centered links, CTA-right that does not
-  belong to the world (a doctor's clipboard does not have a
-  centered SaaS nav).
+  belong to the world (default SaaS nav shape, regardless of styling).
 
 ## Aesthetic anti-defaults (≥2 matches = REJECT)
 
@@ -129,9 +125,7 @@ inside it.
   another distinctive move that lifts it, soft-note it; otherwise
   REJECT.)
 - The site's overall texture / palette / type voice does not match
-  the spec's `world`. If the world is e.g. a control panel but the
-  page reads like an editorial magazine, REJECT — the world is not
-  being honored.
+  the spec's `world`. The world is not being honored.
 - The site's aesthetic closely resembles a recent prior cycle's site
   (texture, palette family, type pairing). The Branding agent is
   required to diverge across cycles; if it didn't, REJECT.

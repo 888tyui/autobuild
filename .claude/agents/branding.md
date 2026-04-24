@@ -64,9 +64,7 @@ enough that another designer could ship the project from it.
    - **Direction in one sentence** — the through-line. If you cannot
      write this in one sentence, you have not committed.
    - **The world** — restate it concretely. What does the visitor
-     step into? What conventions of this world will the site honor
-     (chapter numbering, registration marks, time stamps, slug lines,
-     ledger lines, whatever)?
+     step into? What conventions of this world will the site honor?
    - **The fetish object's role** — where does it appear? At what
      sizes? Photographed how? Does it become a recurring motif, a
      watermark, a system?

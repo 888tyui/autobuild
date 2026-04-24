@@ -67,15 +67,11 @@ camelCased, often ending in -Hub / -Lab / -Pulse / -Flow / -Sync /
 ### Bias toward
 - A single invented word with weight — no obvious morpheme breakdown.
 - A real word that meant something else first, borrowed from a
-  domain unrelated to the product (weather, music, biology, geology,
-  mythology, archaic English, printing, navigation, anatomy, ships,
-  cartography, instruments, kitchens).
+  domain unrelated to the product.
 - A place name or proper noun.
 - A name that is *oblique* to what the product does — the visitor
   learns what the name means after using it, not before.
-- A name that could plausibly be a person, a tool, a creature, a
-  ship, a piece of furniture, a place — not obviously a software
-  product.
+- A name that does not obviously read as a software product.
 - One word, when one word can carry the weight.
 
 The good name is one the visitor remembers *because* they cannot
@@ -90,26 +86,23 @@ Every project commits to a one-sentence answer for each before any
 visual work begins. Vague answers fail Verify.
 
 1. **What does this product actually feel like to use?**
-   Not what it does — what it *feels* like. Anxious? Quiet? Sharp?
-   Public? Private? A held breath?
+   Not what it does — what it *feels* like. The emotional weather.
+   Specific, not vague. Generic adjectives ("modern", "clean",
+   "powerful") fail.
 
 2. **What is its fetish object?**
-   The single physical thing the brand returns to. A device, an artifact,
-   a photograph, a recurring mark, a piece of furniture, a tool. It must
-   be photograph-able or render-able. "A graph" does not count. "A
-   1970s anemometer" does.
+   The single physical thing the brand returns to. Must be
+   photograph-able or render-able — abstract concepts do not count.
 
 3. **What world is the site set in?**
-   A factory floor? A doctor's clipboard? A press proof? A topographic
-   chart? A magazine spread? A control panel? A library card catalog?
    This is not the *aesthetic*. It is the *premise* — the fiction the
-   site asks the visitor to step into.
+   site asks the visitor to step into. Not "dashboard" / "landing
+   page" / "app".
 
 4. **What is the one thing they remember after closing the tab?**
-   If the answer is "the colors" or "it was clean", start over.
-   The right answer is a moment, an image, a sentence, a sound, a
-   gesture — something concrete enough that the visitor could describe
-   it to a friend without the URL.
+   If the answer is a generic adjective ("clean", "professional",
+   "the design"), start over. The right answer is concrete enough that
+   the visitor could describe it to a friend without the URL.
 
 ---
 
@@ -163,27 +156,23 @@ Direction, not prescription. The cycle invents inside these.
   bracket each other, refuse to sit in clean tiles.
 - A single large object — photographed, rendered, drawn, scanned —
   that the page is built around rather than decorated with.
-- Diegetic chrome: time, coordinates, version numbers, status dots,
-  registration marks, slug lines, page numbers, type-spec labels —
-  whatever belongs to the world.
-- Editorial structures (chapters, sections numbered like a manual,
-  spreads, magazine fronts) when the project supports them.
+- Diegetic chrome — whatever metadata belongs to the world the site
+  is set in.
+- Structures borrowed from the world's own conventions when the
+  project supports them.
 - Asymmetry. Negative space that is structural, not decorative.
 
 ### Aesthetic
-- Color from a real source — pigments, paints, photographs of physical
-  things, packaging, signage, fabric. Name the source in the kit.
+- Color from a real source — name what the color is *of*, not its
+  role.
 - Texture from the world the project is set in, never as default.
   Whatever the world's substrate actually is — derive it from the
   spec's `world` and `fetish_object`, do not reach for a familiar
   recipe. Nothing decorative.
-- Typography that signals position before it is read — italic display
-  serif, hand-drawn caps, scanned wood-type, custom letterforms,
-  monospace as voice not as fallback.
+- Typography that signals position before it is read.
 - A single consistent type voice for everything load-bearing; utility
   type is allowed to be neutral.
-- One color move that breaks the rest — a footer block, a single
-  ghost watermark, a status indicator that breathes.
+- One color move that breaks the rest, when it earns the break.
 
 ### Copy
 - The fewest words that work.
