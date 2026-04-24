@@ -109,5 +109,23 @@ export const api = {
     ),
   cancel: (projectId: string) =>
     jpost<{ cancelled: boolean; project_id: string }>(`/api/cycles/${projectId}/cancel`, {}),
+  deleteCycle: async (projectId: string) => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}`, {
+      method: 'DELETE',
+      cache: 'no-store',
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      throw new Error(body.error ?? `delete → ${res.status}`)
+    }
+    return (await res.json()) as {
+      project_id: string
+      state_removed: boolean
+      project_removed: boolean
+      project_path?: string
+      state_error?: string
+      project_error?: string
+    }
+  },
   apiBase: API_BASE,
 }

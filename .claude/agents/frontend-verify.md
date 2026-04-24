@@ -2,7 +2,7 @@
 name: frontend-verify
 description: Gate 2. Inspects the built site under projects/{slug}/ and decides PASS or REJECT against rulebook/frontend-verify.md. Catches mockup leakage, AI-generic patterns, and brand-misalignment. Always run as stage 10 of the autobuild pipeline.
 tools: Read, Bash, Glob, Grep, Write
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Frontend Verify Agent

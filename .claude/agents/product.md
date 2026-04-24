@@ -2,7 +2,7 @@
 name: product
 description: Builds the backend (Prisma + PostgreSQL on Railway), optional Anchor smart contracts, and any CLI surface the project needs. Runs in parallel with web-build as stage 9.
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Product Agent

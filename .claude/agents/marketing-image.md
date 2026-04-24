@@ -2,7 +2,7 @@
 name: marketing-image
 description: Generates marketing image assets — hero visuals, OG image, social cards, supporting images. Uses the Gemini Nano Banana tool. Prompts must be built from the spec's fetish object and world, not generic visual categories. Runs in parallel with branding-kit as stage 7.
 tools: Read, Write, Bash, Glob
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Marketing Image Agent

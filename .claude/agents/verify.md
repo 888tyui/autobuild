@@ -2,7 +2,7 @@
 name: verify
 description: Gate 1. Reads the Compose agent's project-spec.json and decides PASS or REJECT against rulebook/verify.md. On REJECT, writes a structured rejection.md so the next cycle's Search agent learns. Always run as stage 3 of the autobuild pipeline.
 tools: Read, Write, Glob, Grep, WebFetch
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Verify Agent

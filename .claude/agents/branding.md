@@ -2,7 +2,7 @@
 name: branding
 description: Translates the project's feeling, fetish object, and world into a committed brand direction document. Reads collected references and the spec, then writes a direction Branding Kit and Web Build will execute. Always run as stage 5 of the autobuild pipeline.
 tools: Read, Write, Glob
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Branding Agent

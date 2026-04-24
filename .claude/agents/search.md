@@ -2,7 +2,7 @@
 name: search
 description: Researches Web3 trends, hot issues in target categories, related keywords, and stack signals. Produces a structured search-report.json that the Compose agent uses to decide what to build. Always run as stage 1 of the autobuild pipeline.
 tools: WebSearch, WebFetch, Read, Write, Glob, Grep
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Search Agent

@@ -17,9 +17,10 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { URL } from 'node:url'
 import { ROOT_DIR } from './utils/context.js'
-import { readStatus, setMode } from './utils/status-store.js'
+import { readStatus, setMode, listActiveCycleIds } from './utils/status-store.js'
 
 const STATE_DIR = path.join(ROOT_DIR, 'state')
+const PROJECTS_DIR = path.join(ROOT_DIR, 'projects')
 
 let triggerHandler = null
 export function registerTriggerHandler(fn) {
@@ -224,6 +225,46 @@ async function getCycleDetail(projectId) {
   }
 }
 
+async function deleteCycle(projectId) {
+  const stateDir = path.join(STATE_DIR, projectId)
+  // Path-traversal guard — resolved path must remain inside STATE_DIR
+  const resolvedState = path.resolve(stateDir)
+  if (!resolvedState.startsWith(path.resolve(STATE_DIR) + path.sep)) {
+    throw new Error('refusing to delete: path outside state/')
+  }
+
+  // Look up slug from spec before we wipe state, so we can also remove the
+  // built project under projects/{slug}/.
+  let slug = null
+  const spec = await safeReadJson(path.join(stateDir, 'project-spec.json'))
+  if (spec?.slug && /^[a-z0-9-]+$/.test(spec.slug)) slug = spec.slug
+
+  const removed = { project_id: projectId, state_removed: false, project_removed: false }
+
+  try {
+    await fs.rm(stateDir, { recursive: true, force: true })
+    removed.state_removed = true
+  } catch (err) {
+    removed.state_error = err.message
+  }
+
+  if (slug) {
+    const projDir = path.join(PROJECTS_DIR, slug)
+    const resolvedProj = path.resolve(projDir)
+    if (resolvedProj.startsWith(path.resolve(PROJECTS_DIR) + path.sep)) {
+      try {
+        await fs.rm(projDir, { recursive: true, force: true })
+        removed.project_removed = true
+        removed.project_path = path.relative(ROOT_DIR, projDir)
+      } catch (err) {
+        removed.project_error = err.message
+      }
+    }
+  }
+
+  return removed
+}
+
 async function getCycleFile(projectId, relativePath) {
   // Restrict to the cycle's state directory to prevent path traversal.
   const dir = path.join(STATE_DIR, projectId)
@@ -310,6 +351,18 @@ export function startServer({ port }) {
         const result = await cancelHandler({ projectId })
         if (!result.cancelled) return json(res, 404, { error: 'cycle not active or not cancellable' })
         return json(res, 202, result)
+      }
+
+      const deleteMatch = p.match(/^\/api\/cycles\/([^/]+)$/)
+      if (deleteMatch && req.method === 'DELETE') {
+        const projectId = deleteMatch[1]
+        if (!PROJECT_ID_RE.test(projectId)) return json(res, 400, { error: 'invalid project_id' })
+        // Refuse to delete a live cycle
+        if (listActiveCycleIds().includes(projectId)) {
+          return json(res, 409, { error: 'cycle is live — cancel it first' })
+        }
+        const removed = await deleteCycle(projectId)
+        return json(res, 200, removed)
       }
 
       return json(res, 404, { error: 'not found' })

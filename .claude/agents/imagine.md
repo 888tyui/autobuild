@@ -2,7 +2,7 @@
 name: imagine
 description: Replaces Search in experimental cycles. Reads no trends — invents from a single provocation picked deterministically by cycle ID. Produces 2–4 seed concepts; Compose picks one and develops it. Always run as stage 1 of an experimental autobuild cycle.
 tools: Read, Write, Glob, Grep
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Imagine Agent

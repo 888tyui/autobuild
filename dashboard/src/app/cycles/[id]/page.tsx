@@ -1,11 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
 import { api, type CycleDetail, type Status } from '@/lib/api'
 import { fmtBytes, fmtDateTime, fmtRelative } from '@/lib/format'
 
 export default function CycleDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter()
   const { id } = use(params)
   const [detail, setDetail] = useState<CycleDetail | null>(null)
   const [status, setStatus] = useState<Status | null>(null)
@@ -14,6 +16,7 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
   const [fileBody, setFileBody] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const [cancelling, setCancelling] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     let stopped = false
@@ -49,6 +52,32 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
       alert(`cancel failed: ${(err as Error).message}`)
     } finally {
       setCancelling(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    if (deleting || live) return
+    const projHint = detail?.project_path ? `\n + projects/${detail.slug}/` : ''
+    if (
+      !confirm(
+        `Permanently delete cycle ${id}?\nThis removes:\n - state/${id}/${projHint}\n\nThis cannot be undone.`,
+      )
+    )
+      return
+    setDeleting(true)
+    try {
+      const res = await api.deleteCycle(id)
+      const note = [
+        res.state_removed ? `state removed` : null,
+        res.project_removed ? `project removed` : null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+      alert(`deleted — ${note || 'nothing removed'}`)
+      router.push('/cycles')
+    } catch (err) {
+      alert(`delete failed: ${(err as Error).message}`)
+      setDeleting(false)
     }
   }
 
@@ -95,6 +124,17 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
             </button>
           )}
           {live?.cancel_requested && <span className="pill warn">cancelling…</span>}
+          {!live && (
+            <button
+              className="btn"
+              onClick={handleDelete}
+              disabled={deleting}
+              style={{ borderColor: 'var(--bad)', color: 'var(--bad)' }}
+              title="Delete this cycle's state and built project (irreversible)"
+            >
+              {deleting ? '…' : '🗑 delete'}
+            </button>
+          )}
           <span className="meta">{fmtRelative(detail.last_activity_iso)}</span>
         </div>
       </div>

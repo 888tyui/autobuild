@@ -2,7 +2,7 @@
 name: compose
 description: Reads the Search agent's report and composes a concrete project specification — including its emotional weather, fetish object, world, and the one thing a visitor would remember. Produces project-spec.json. Always run as stage 2 of the autobuild pipeline.
 tools: Read, Write, Glob, Grep, WebFetch
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Compose Agent

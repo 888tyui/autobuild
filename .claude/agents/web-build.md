@@ -2,7 +2,7 @@
 name: web-build
 description: Builds the Next.js 16 frontend with Solana wallet integration. Reads the project spec, branding kit, and marketing images and produces a working site under projects/{slug}/. The site must *be* its world — not describe it. Runs in parallel with product as stage 8.
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Web Build Agent

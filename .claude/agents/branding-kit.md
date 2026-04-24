@@ -2,7 +2,7 @@
 name: branding-kit
 description: Commits the Branding agent's direction to specifics — palette hex codes, typography choices, logo system, design tokens. Writes branding-kit.json plus the actual asset files. Runs in parallel with marketing-image as stage 6.
 tools: Read, Write, Bash, Glob
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Branding Kit Agent

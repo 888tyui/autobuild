@@ -2,7 +2,7 @@
 name: cm
 description: Community Manager. Drafts launch tweets and a 1-week content plan for the project's Twitter/X presence. Saves drafts to file only — does NOT call any API. Always run as stage 11 (final) of the autobuild pipeline.
 tools: Read, Write, Glob
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # CM Agent

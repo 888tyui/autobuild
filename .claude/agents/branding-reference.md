@@ -2,7 +2,7 @@
 name: branding-reference
 description: Collects visual references for the Branding agent — but searches Pinterest by the project's *world* and *fetish object*, not by aesthetic categories. Drives the Playwright scraper and writes a manifest. Always run as stage 4 of the autobuild pipeline.
 tools: Read, Write, Glob, Bash
-model: opus
+model: claude-opus-4-7[1m]
 ---
 
 # Branding Reference Agent
