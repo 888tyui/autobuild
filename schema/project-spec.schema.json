@@ -1,0 +1,232 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "project-spec.schema.json",
+  "title": "Project Spec",
+  "description": "Output of the Compose agent. Read by Verify, then by every downstream agent.",
+  "type": "object",
+  "required": [
+    "project_id",
+    "name",
+    "slug",
+    "category_id",
+    "one_liner",
+    "feeling",
+    "fetish_object",
+    "world",
+    "single_takeaway",
+    "core_loop",
+    "audience",
+    "prior_art",
+    "scope",
+    "stack",
+    "wallet_role"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "project_id": { "type": "string" },
+    "name": { "type": "string", "minLength": 2, "maxLength": 40 },
+    "slug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "category_id": { "type": "string" },
+    "one_liner": {
+      "type": "string",
+      "minLength": 20,
+      "maxLength": 140,
+      "description": "Plain English. No Web3 jargon required to parse it."
+    },
+    "feeling": {
+      "type": "string",
+      "minLength": 12,
+      "maxLength": 200,
+      "description": "What the product *feels like to use*. Emotional weather, not features. Specific over vague — 'a held breath at 3am' beats 'anxious'. Drives the entire downstream brand pipeline."
+    },
+    "fetish_object": {
+      "type": "object",
+      "required": ["name", "description"],
+      "description": "The single physical thing the brand returns to. Must be photograph-able or render-able. Abstract concepts disallowed.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Specific name. '1970s Bell Labs anemometer' beats 'a sensor'."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 60,
+          "description": "What it is, what it looks like, why it carries the brand."
+        },
+        "rendering_hint": {
+          "type": "string",
+          "description": "Optional cue for the marketing-image agent — material, lighting, era."
+        }
+      }
+    },
+    "world": {
+      "type": "object",
+      "required": ["name", "premise"],
+      "description": "The fiction the site is set in. Not its aesthetic — its premise. The site will *be* this; it will not *describe* it.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 4,
+          "description": "Short name. 'A press proof', 'A doctor's clipboard', 'A control panel'."
+        },
+        "premise": {
+          "type": "string",
+          "minLength": 80,
+          "description": "Two or three sentences on the world. What does the visitor step into? What conventions of that world will the site honor?"
+        }
+      }
+    },
+    "single_takeaway": {
+      "type": "string",
+      "minLength": 20,
+      "description": "The one thing the visitor remembers after closing the tab. Concrete enough to repeat to a friend without the URL. Generic adjectives ('clean', 'professional') invalid."
+    },
+    "tagline_drafts": {
+      "type": "array",
+      "items": { "type": "string", "maxLength": 80 },
+      "minItems": 2,
+      "maxItems": 5
+    },
+    "core_loop": {
+      "type": "object",
+      "required": ["steps", "moment_of_value"],
+      "properties": {
+        "steps": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 6,
+          "items": { "type": "string", "minLength": 10 }
+        },
+        "moment_of_value": {
+          "type": "string",
+          "minLength": 30,
+          "description": "The single moment a user feels the product was worth opening."
+        }
+      }
+    },
+    "audience": {
+      "type": "object",
+      "required": ["primary", "size_hypothesis"],
+      "properties": {
+        "primary": { "type": "string", "minLength": 20 },
+        "secondary": { "type": "string" },
+        "size_hypothesis": {
+          "type": "string",
+          "description": "Order-of-magnitude guess at addressable users with reasoning."
+        }
+      }
+    },
+    "prior_art": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["name", "url", "how_we_differ"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "how_we_differ": { "type": "string", "minLength": 30 }
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": ["in_scope", "out_of_scope"],
+      "properties": {
+        "in_scope": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "out_of_scope": { "type": "array", "items": { "type": "string" }, "minItems": 2 }
+      }
+    },
+    "stack": {
+      "type": "object",
+      "required": ["frontend", "backend", "chain"],
+      "properties": {
+        "frontend": { "type": "string" },
+        "backend": { "type": "string" },
+        "chain": { "type": "string" },
+        "contracts": {
+          "type": "object",
+          "properties": {
+            "framework": { "type": "string", "enum": ["anchor", "native", "none"] },
+            "programs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "purpose": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "wallet_role": {
+      "type": "string",
+      "enum": ["identity", "read-only", "transactional", "gating"],
+      "description": "What the wallet actually does in this product."
+    },
+    "monetization": {
+      "type": "string",
+      "description": "Optional. If present, must be a real mechanism, not 'token go up'."
+    },
+    "shareable_surface": {
+      "type": "string",
+      "description": "What a user shares after using it. If you cannot name one, reconsider."
+    },
+    "external_links": {
+      "type": "object",
+      "required": ["twitter", "docs"],
+      "description": "Standard external presence — every Solana project ships with these. Web Build renders them in a way that belongs to the world (never a generic top-right nav cluster).",
+      "properties": {
+        "twitter": {
+          "type": "object",
+          "required": ["handle"],
+          "properties": {
+            "handle": {
+              "type": "string",
+              "pattern": "^@[A-Za-z0-9_]{1,15}$",
+              "description": "Project's X/Twitter handle. Use a plausible unclaimed handle as placeholder if not yet registered."
+            },
+            "url": { "type": "string", "format": "uri" }
+          }
+        },
+        "token": {
+          "type": "object",
+          "description": "Present only if the project has or will have an associated SPL token. Omit entirely otherwise.",
+          "required": ["address"],
+          "properties": {
+            "address": {
+              "type": "string",
+              "description": "Solana mint address. Use 'TBD' string if pre-launch."
+            },
+            "symbol": { "type": "string" },
+            "explorer_url": { "type": "string", "format": "uri" }
+          }
+        },
+        "docs": {
+          "type": "object",
+          "required": ["kind"],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": ["internal", "external"],
+              "description": "internal = built as a /docs route in this project. external = link to GitHub README, Mirror, GitBook, etc."
+            },
+            "path_or_url": {
+              "type": "string",
+              "description": "Either '/docs' style internal route, or full https:// URL."
+            }
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Things Compose deliberately deferred. Verify will weight these."
+    }
+  }
+}

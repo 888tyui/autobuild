@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "search-report.schema.json",
+  "title": "Search Report",
+  "description": "Output of the Search agent. Read by Compose.",
+  "type": "object",
+  "required": ["project_id", "cycle_started_at", "category_candidates", "trend_signals", "stack_recommendation"],
+  "additionalProperties": false,
+  "properties": {
+    "project_id": { "type": "string", "pattern": "^[0-9]{8}-[0-9]{4}-[a-z0-9-]+$" },
+    "cycle_started_at": { "type": "string", "format": "date-time" },
+    "informed_by_rejections": {
+      "type": "array",
+      "description": "Project IDs whose rejection.md was loaded as 'avoid this' context.",
+      "items": { "type": "string" }
+    },
+    "informed_by_human_reviews": {
+      "type": "array",
+      "description": "Project IDs whose human-review.md was loaded as scored signal.",
+      "items": { "type": "string" }
+    },
+    "category_candidates": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["category_id", "rationale", "weight"],
+        "properties": {
+          "category_id": { "type": "string", "description": "must match a categories.yaml id" },
+          "rationale": { "type": "string", "minLength": 40 },
+          "weight": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "trend_signals": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["signal", "source", "captured_at", "relevance"],
+        "properties": {
+          "signal": { "type": "string", "description": "concrete trend, not vague theme" },
+          "source": { "type": "string", "format": "uri" },
+          "captured_at": { "type": "string", "format": "date-time" },
+          "relevance": { "type": "string", "minLength": 20 }
+        }
+      }
+    },
+    "keyword_clusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["theme", "keywords"],
+        "properties": {
+          "theme": { "type": "string" },
+          "keywords": { "type": "array", "items": { "type": "string" }, "minItems": 3 }
+        }
+      }
+    },
+    "stack_recommendation": {
+      "type": "object",
+      "required": ["frontend", "backend", "chain"],
+      "properties": {
+        "frontend": { "type": "string", "default": "Next.js 16" },
+        "backend": { "type": "string", "default": "Prisma + Railway" },
+        "chain": { "type": "string", "default": "Solana" },
+        "contracts": { "type": "string", "enum": ["none", "anchor-likely", "anchor-required"] },
+        "deviations": {
+          "type": "array",
+          "description": "Any departure from the default stack with reason.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "reason": { "type": "string", "minLength": 30 }
+            }
+          }
+        }
+      }
+    },
+    "anti_patterns_observed": {
+      "type": "array",
+      "description": "Patterns from past rejections this cycle is consciously avoiding.",
+      "items": { "type": "string" }
+    }
+  }
+}

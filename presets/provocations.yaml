@@ -1,0 +1,133 @@
+# Provocations for the Imagine agent (experimental mode)
+#
+# Each entry is a method-shaped prompt — a way of looking, not an example.
+# The Imagine agent picks ONE per cycle, deterministically, by hashing the
+# project_id against the list length. The same project_id always produces
+# the same provocation; rejected cycles can re-roll by being assigned a new
+# project_id.
+#
+# Add provocations here freely. Keep them directional, not descriptive —
+# they should provoke a method of attention, not name a category to fill.
+
+provocations:
+  - id: practices-without-shared-audience
+    text: |
+      Take two practices that don't share an audience. What's the protocol
+      that would only make sense if both audiences had to coordinate?
+
+  - id: negative-space
+    text: |
+      Look for the negative space of a known product. What's the thing it
+      is pointedly *not* doing? Build that as its own protocol.
+
+  - id: pre-blockchain-trust-practice
+    text: |
+      Pick a pre-blockchain practice that involves trust, ledgers, or
+      claims (notary, cooperative banking, mutual insurance, escrow,
+      apprenticeship). What does it want to *become* on-chain — not a
+      reproduction, an evolution?
+
+  - id: smallest-possible
+    text: |
+      What's the smallest possible thing that could still feel like a
+      Web3 protocol? Strip until removing one more piece breaks the
+      premise. Build that thing.
+
+  - id: ignored-constraint
+    text: |
+      Pick a constraint no protocol seems to take seriously — radical
+      privacy, radical slowness, radical commitment, radical transience,
+      radical illegibility, radical exclusion. Build the protocol that
+      takes only that constraint seriously.
+
+  - id: shadow-of-existing
+    text: |
+      Choose a protocol that already exists. What would its *shadow* be —
+      the thing you would build to undo it, complement it, or expose what
+      it pretends not to do?
+
+  - id: cultural-artifact
+    text: |
+      Take a cultural artifact (a card game, a magazine, a festival, a
+      market type, a folk tradition). What's its on-chain version that
+      takes the artifact's structure seriously rather than dressing it
+      up in a marketplace?
+
+  - id: place-bound-practice
+    text: |
+      Choose a practice that requires a specific physical place to
+      function (a courthouse, a stage, a kitchen, a workshop, a barber's
+      chair). What's the on-chain version that requires its own kind of
+      place — and what does that place look like?
+
+  - id: rare-life-events
+    text: |
+      Pick a transaction that happens between strangers, off-chain, only
+      ~once per year (a will, a divorce, a birth registration, a death
+      notice, a custody handoff). What's its protocol?
+
+  - id: rarely-used-verb
+    text: |
+      Pick a verb rarely used as a product name (mourn, remember, host,
+      vouch, repair, witness, accompany, archive). Build the protocol
+      named by that verb.
+
+  - id: penalize-most-active
+    text: |
+      What's a protocol that intentionally penalizes its most active
+      users? What's its purpose? Who would defend it?
+
+  - id: public-infrastructure-analog
+    text: |
+      Choose a piece of public infrastructure (a streetlight, a sewer, a
+      mailbox, a library card system, a coatroom, a school crossing).
+      Build its on-chain analog with the same kind of patient utility.
+
+  - id: small-fixed-participants
+    text: |
+      What's a protocol that's only useful between exactly three parties?
+      Or exactly seven? What changes when the participant count is fixed
+      and small?
+
+  - id: missing-media-primitive
+    text: |
+      Take a kind of media that doesn't yet exist as a Web3 primitive
+      (a postcard, a voice memo, a physical letter, a recipe handed down,
+      a marginalia, a footnote). Make its protocol.
+
+  - id: from-recent-rejection
+    text: |
+      Read the most recent rejection report. The reason that project
+      failed is a constraint. Build the protocol that takes that
+      constraint as its central premise — i.e. it cannot fail in the
+      same way because the failure mode is the feature.
+
+  - id: protocol-from-fiction
+    text: |
+      What protocol exists in fiction (book, film, game, anime, myth)
+      that doesn't yet exist on-chain? Build a thing that references the
+      fiction without copying it — same mechanism, different reason.
+
+  - id: random-on-chain-account
+    text: |
+      Pick a Solana account or transaction at random from the last week.
+      Look at its data, signers, transfers. What service would the people
+      who care about *this* kind of activity want?
+
+  - id: only-makes-sense-if-true
+    text: |
+      Complete the sentence: "This protocol would only make sense if X
+      were true." Pick an X that is *almost* true — close enough to feel
+      adjacent to reality, far enough to be a deliberate fiction.
+
+  - id: opposite-of-recent
+    text: |
+      Read the three most recent project specs. Identify what they share —
+      a tone, a pace, an audience, a kind of seriousness. Build the
+      protocol that is the *opposite* on every shared dimension.
+
+  - id: something-that-takes-time
+    text: |
+      Almost every protocol resolves in one block, one signature, one
+      moment. Build the protocol that requires time to pass — days,
+      seasons, years. What's worth the wait?

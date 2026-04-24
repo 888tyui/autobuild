@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "position-pulse",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "projects/position-pulse",
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "palimpsest",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "projects/palimpsest",
+      "port": 3001,
+      "autoPort": true
+    },
+    {
+      "name": "autobuild-dashboard",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "cwd": "dashboard",
+      "port": 4000,
+      "autoPort": true
+    }
+  ]
+}

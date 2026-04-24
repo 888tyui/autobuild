@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rejection.schema.json",
+  "title": "Rejection Report",
+  "description": "Written by Verify or Frontend Verify on REJECT. Loaded by future Search cycles as 'avoid this' context.",
+  "type": "object",
+  "required": ["project_id", "stage", "decided_at", "summary", "avoid_patterns"],
+  "additionalProperties": false,
+  "properties": {
+    "project_id": { "type": "string" },
+    "stage": { "type": "string", "enum": ["verify", "frontend-verify"] },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "category_id": { "type": "string" },
+    "mood_id": { "type": "string" },
+    "trigger": {
+      "type": "string",
+      "description": "Which axis or hard-fail caused the reject. Free-form but specific."
+    },
+    "axis_scores": {
+      "type": "object",
+      "description": "Only for stage=verify.",
+      "properties": {
+        "rationality": { "type": "number", "minimum": 1, "maximum": 10 },
+        "appeal": { "type": "number", "minimum": 1, "maximum": 10 },
+        "differentiation": { "type": "number", "minimum": 1, "maximum": 10 },
+        "buildability": { "type": "number", "minimum": 1, "maximum": 10 },
+        "memorability": { "type": "number", "minimum": 1, "maximum": 10 }
+      }
+    },
+    "ai_generic_hits": {
+      "type": "array",
+      "description": "Only for stage=frontend-verify. List of tells that were detected.",
+      "items": { "type": "string" }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 60,
+      "description": "Two to four sentences naming the specific failure."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": { "type": "string", "enum": ["spec-quote", "file-line", "screenshot"] },
+          "ref": { "type": "string" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "avoid_patterns": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Concrete patterns the next Search cycle should avoid. Not abstract advice.",
+      "items": { "type": "string", "minLength": 20 }
+    },
+    "salvageable_kernel": {
+      "type": ["string", "null"],
+      "description": "If something here was worth keeping for a future cycle, name it. Null if nothing."
+    }
+  }
+}

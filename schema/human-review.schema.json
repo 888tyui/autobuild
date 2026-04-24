@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "human-review.schema.json",
+  "title": "Human Review",
+  "description": "Optional file written by a human after a cycle. Loaded by future Search cycles as scored signal.",
+  "type": "object",
+  "required": ["project_id", "reviewed_at", "score"],
+  "additionalProperties": false,
+  "properties": {
+    "project_id": { "type": "string" },
+    "reviewed_at": { "type": "string", "format": "date-time" },
+    "reviewer": { "type": "string", "description": "Free-form. Email, handle, or 'self'." },
+    "score": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "Overall keep-or-kill signal. 1 = bury this direction, 10 = do more like this."
+    },
+    "axis_scores": {
+      "type": "object",
+      "description": "Optional finer-grained scores. Same axes as Verify.",
+      "properties": {
+        "rationality": { "type": "number", "minimum": 1, "maximum": 10 },
+        "appeal": { "type": "number", "minimum": 1, "maximum": 10 },
+        "differentiation": { "type": "number", "minimum": 1, "maximum": 10 },
+        "buildability": { "type": "number", "minimum": 1, "maximum": 10 },
+        "memorability": { "type": "number", "minimum": 1, "maximum": 10 },
+        "branding": { "type": "number", "minimum": 1, "maximum": 10 },
+        "frontend_polish": { "type": "number", "minimum": 1, "maximum": 10 }
+      }
+    },
+    "do_more_of": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Concrete things the next cycle should keep doing."
+    },
+    "do_less_of": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Concrete things the next cycle should stop doing."
+    },
+    "free_form": {
+      "type": "string",
+      "description": "Anything else. Long-form notes, gut reactions, ideas to try."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional labels. Search agent can group reviews by tag."
+    }
+  }
+}

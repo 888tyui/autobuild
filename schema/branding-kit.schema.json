@@ -1,0 +1,145 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "branding-kit.schema.json",
+  "title": "Branding Kit",
+  "description": "Output of the Branding Kit agent. Read by Marketing Image and Web Build.",
+  "type": "object",
+  "required": ["project_id", "direction_summary", "logo", "palette", "typography", "voice"],
+  "additionalProperties": false,
+  "properties": {
+    "project_id": { "type": "string" },
+    "direction_summary": {
+      "type": "string",
+      "minLength": 80,
+      "description": "Two or three sentences re-stating the branding direction in this kit's own words. Begins from the spec's feeling/world/fetish object."
+    },
+    "logo": {
+      "type": "object",
+      "required": ["primary_path", "variants", "rationale"],
+      "properties": {
+        "primary_path": { "type": "string", "description": "Path under projects/{slug}/public/brand/" },
+        "variants": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "description": "e.g. mark-only, wordmark, mono-dark" },
+              "path": { "type": "string" }
+            }
+          }
+        },
+        "rationale": { "type": "string", "minLength": 40 }
+      }
+    },
+    "fetish_object_assets": {
+      "type": "object",
+      "description": "Renders or photographs of the spec's fetish_object. Required when the spec defines one (almost always).",
+      "properties": {
+        "name": { "type": "string", "description": "Echoes spec.fetish_object.name" },
+        "asset_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Paths under projects/{slug}/public/brand/fetish/"
+        },
+        "rendering_notes": {
+          "type": "string",
+          "description": "Material, lighting, environment used. So Web Build knows how to position it."
+        }
+      }
+    },
+    "mascot": {
+      "type": "object",
+      "description": "Present only if the brand has a character.",
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string", "minLength": 60 },
+        "asset_paths": { "type": "array", "items": { "type": "string" } },
+        "voice_traits": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "palette": {
+      "type": "object",
+      "required": ["entries", "rationale"],
+      "description": "5–7 named color entries with hex. Names must reference real-world sources (pigments, paints, photographs, signage), not roles ('primary', 'neutral 800').",
+      "properties": {
+        "entries": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "required": ["name", "hex", "source"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "CSS variable name without the '--' prefix. Lowercase, hyphenated. Source-based, not role-based. e.g. 'paper-newsprint', 'ink-iron-gall'."
+              },
+              "hex": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" },
+              "source": {
+                "type": "string",
+                "description": "Where this color comes from in the real world. e.g. 'Pantone 877 silver', 'aged newsprint paper', 'IBM Selectric typewriter ribbon ink'."
+              },
+              "intended_use": {
+                "type": "string",
+                "description": "One short phrase. e.g. 'page background', 'all body type', 'one alert tone for CRITICAL only'."
+              }
+            }
+          }
+        },
+        "rationale": { "type": "string", "minLength": 30 }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "required": ["display", "body"],
+      "properties": {
+        "display": {
+          "type": "object",
+          "properties": {
+            "family": { "type": "string" },
+            "source": { "type": "string", "enum": ["google", "self-hosted", "system"] },
+            "weights": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "family": { "type": "string" },
+            "source": { "type": "string", "enum": ["google", "self-hosted", "system"] },
+            "weights": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "mono": {
+          "type": "object",
+          "properties": {
+            "family": { "type": "string" },
+            "source": { "type": "string", "enum": ["google", "self-hosted", "system"] }
+          }
+        }
+      }
+    },
+    "motion": {
+      "type": "object",
+      "properties": {
+        "philosophy": { "type": "string" },
+        "default_easing": { "type": "string" },
+        "default_duration_ms": { "type": "number" }
+      }
+    },
+    "voice": {
+      "type": "object",
+      "required": ["tone", "do", "dont"],
+      "properties": {
+        "tone": { "type": "string", "minLength": 30 },
+        "do": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "dont": { "type": "array", "items": { "type": "string" }, "minItems": 3 },
+        "sample_lines": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "design_tokens_path": {
+      "type": "string",
+      "description": "Where the kit's CSS variables / Tailwind config snippet was written."
+    }
+  }
+}

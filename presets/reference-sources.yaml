@@ -1,0 +1,29 @@
+# Reference sources for the Branding Reference agent
+# The Playwright scraper uses these. Add or disable sources here without
+# touching code. `query_template` uses {{mood}} and {{category}} placeholders.
+#
+# History note: previously included Awwwards, Godly, Land-book, SiteInspire,
+# Dribbble, Behance, Mirror, Zora, Magic Eden. Removed 2026-04-24 because
+# their search-URL matching was unreliable and they often returned the same
+# page for unrelated queries. Pinterest gives broader, noisier coverage that
+# the Branding agent filters anyway.
+
+sources:
+  - id: pinterest
+    name: Pinterest
+    type: visual_grid
+    base_url: https://www.pinterest.com
+    # The Branding Reference agent passes raw query strings — usually
+    # phrases describing the project's world, fetish object, or feeling
+    # ("anemometer in field", "x-ray sheet on lightbox", "press proof
+    # registration marks"). Do not append generic crypto/web3 terms.
+    search_url: https://www.pinterest.com/search/pins/?q={{query}}
+    capture: infinite_scroll
+    scroll_passes: 4
+    max_items: 30
+    notes: noisy but unmatched for mood/texture; Branding agent filters aggressively
+
+# Output structure per project:
+#   state/{project-id}/references/
+#     ├── manifest.json          (source, url, captured_at, notes for each item)
+#     └── pinterest/*.png

@@ -1,0 +1,29 @@
+{
+  "name": "autobuild",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Automated Web3 product factory powered by Claude Code subagents",
+  "type": "module",
+  "scripts": {
+    "start": "concurrently --names \"orch,dash\" --prefix-colors \"cyan,magenta\" \"npm:orchestrator\" \"npm:dashboard\"",
+    "orchestrator": "node orchestrator/index.js",
+    "orchestrator:manual": "node orchestrator/index.js --start-mode manual",
+    "dashboard": "npm --prefix dashboard run dev",
+    "dashboard:install": "npm --prefix dashboard install",
+    "cycle:once": "node orchestrator/index.js --once",
+    "cycle:dry": "node orchestrator/index.js --dry-run",
+    "setup": "npm install && npm --prefix dashboard install && npx playwright install chromium"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "^0.2.0",
+    "ajv": "^8.17.0",
+    "concurrently": "^9.2.1",
+    "nanoid": "^5.0.0",
+    "node-cron": "^3.0.3",
+    "playwright": "^1.49.0",
+    "yaml": "^2.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

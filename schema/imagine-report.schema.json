@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "imagine-report.schema.json",
+  "title": "Imagine Report",
+  "description": "Output of the Imagine agent (experimental mode). Read by Compose in place of search-report.json. Compose picks ONE seed and develops it.",
+  "type": "object",
+  "required": ["project_id", "mode", "generated_at", "provocation", "seeds"],
+  "additionalProperties": false,
+  "properties": {
+    "project_id": { "type": "string", "pattern": "^[0-9]{8}-[0-9]{4}-[a-z0-9-]+$" },
+    "mode": { "type": "string", "enum": ["experimental"] },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "provocation": {
+      "type": "object",
+      "required": ["id", "text"],
+      "properties": {
+        "id": { "type": "string" },
+        "text": { "type": "string", "minLength": 30 },
+        "picked_by": {
+          "type": "string",
+          "description": "How this provocation was selected — usually 'hash(project_id) % length' for deterministic re-rolls per cycle."
+        }
+      }
+    },
+    "informed_by_human_signals": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Project IDs whose human-review.md weighted this cycle's seeds."
+    },
+    "anti_patterns_observed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Patterns from past rejections this cycle is consciously avoiding."
+    },
+    "seeds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["working_name", "premise", "why_interesting"],
+        "properties": {
+          "working_name": {
+            "type": "string",
+            "description": "Tentative name. Compose may rename. Follow DIRECTION.md naming rules even here."
+          },
+          "premise": {
+            "type": "string",
+            "minLength": 60,
+            "description": "1–3 sentences. The protocol in plain English. What it is, who interacts with it, why it exists."
+          },
+          "why_interesting": {
+            "type": "string",
+            "minLength": 30,
+            "description": "What makes this seed worth developing. Honest — if it's a long shot, say so."
+          },
+          "fetish_hint": {
+            "type": "string",
+            "description": "Optional: a candidate physical object the brand might return to."
+          },
+          "world_hint": {
+            "type": "string",
+            "description": "Optional: a candidate world / fiction the site might be set in."
+          },
+          "wallet_role_hint": {
+            "type": "string",
+            "enum": ["identity", "read-only", "transactional", "gating"]
+          }
+        }
+      }
+    },
+    "stack_recommendation": {
+      "type": "object",
+      "description": "Same shape as search-report's stack_recommendation. Defaults are fine — experimental cycles rarely need exotic stacks.",
+      "properties": {
+        "frontend": { "type": "string" },
+        "backend": { "type": "string" },
+        "chain": { "type": "string" },
+        "contracts": { "type": "string", "enum": ["none", "anchor-likely", "anchor-required"] }
+      }
+    }
+  }
+}

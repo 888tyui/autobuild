@@ -1,0 +1,103 @@
+# Project category presets — Web3/Solana focus
+# Search and Compose agents pick from these. Override allowed if a stronger
+# fit appears, but record the reason in the search-report.
+
+categories:
+  - id: defi-tool
+    name: DeFi Tool
+    description: |
+      Utilities that improve the DeFi user experience without launching a new
+      protocol. LP managers, yield routers, position trackers, hedging helpers,
+      slippage analyzers, MEV-aware swap aggregators.
+    typical_features:
+      - wallet read access for portfolio aggregation
+      - on-chain action composition (multi-step transaction builder)
+      - alerting on user-defined thresholds
+    contract_likely: maybe   # only if custom routing or vault logic is core
+    examples_to_study:
+      - Jito, Kamino, MarginFi dashboards (UX patterns, not clones)
+
+  - id: nft-utility
+    name: NFT Utility
+    description: |
+      Tools that add usefulness to existing NFT collections — token-gated
+      experiences, holder-only content drops, on-chain metadata editors,
+      compressed-NFT batch tools, royalty enforcement helpers.
+    typical_features:
+      - holder verification via wallet
+      - per-collection or per-trait gating
+      - off-chain content delivery tied to on-chain ownership
+    contract_likely: maybe
+    examples_to_study:
+      - Tensor, Magic Eden creator tools
+
+  - id: socialfi
+    name: SocialFi
+    description: |
+      Social experiences where identity, reputation, or content is anchored
+      on-chain. Wallet-as-identity feeds, on-chain follower graphs, paid DMs,
+      tipping primitives, verifiable curation.
+    typical_features:
+      - wallet-based auth (no email)
+      - public on-chain interactions plus off-chain media
+      - simple monetization primitive (tips, paywalls, subscriptions)
+    contract_likely: yes
+    examples_to_study:
+      - Farcaster (concept), Friend.tech (mechanics, not aesthetics)
+
+  - id: gamefi
+    name: GameFi
+    description: |
+      Lightweight on-chain or hybrid games. Casual interactive experiences
+      where the chain matters for ownership or scoring, not for every frame.
+      Prefer browser-playable, short-session games.
+    typical_features:
+      - quick session loop (under 5 minutes)
+      - on-chain leaderboard or ownership of items
+      - shareable result (encourages organic distribution)
+    contract_likely: yes
+    examples_to_study:
+      - Parcl, Sanko, browser-native indie games
+
+  - id: dao-tool
+    name: DAO Tool
+    description: |
+      Operational tooling for DAOs and on-chain orgs. Voting UX,
+      treasury dashboards, grant-flow trackers, contributor payout helpers,
+      proposal drafters, reputation displays.
+    typical_features:
+      - multisig or governance integration
+      - clear visualization of treasury / proposal state
+      - low-friction contributor onboarding
+    contract_likely: maybe
+    examples_to_study:
+      - Realms, Squads UX
+
+  - id: infra-tool
+    name: Infra Tool
+    description: |
+      Developer-facing utilities for the Solana ecosystem. RPC inspectors,
+      transaction debuggers, IDL explorers, deployment helpers, account
+      decoders, indexer dashboards.
+    typical_features:
+      - read-heavy, low or no wallet write actions
+      - precise technical UI (data density acceptable)
+      - shareable artifacts (links to specific tx/account states)
+    contract_likely: no
+    examples_to_study:
+      - SolanaFM, Solscan dev views, Helius dashboards
+
+  - id: meme
+    name: Meme Project
+    description: |
+      Internet-native, character-led, often absurd. The product itself can be
+      small — what matters is the world it implies. Mascot, voice, in-jokes,
+      and a token or NFT hook usually present. The web build is mostly a
+      shrine to the bit.
+    typical_features:
+      - strong visual identity (mascot, motif, palette)
+      - one or two interactive bits that reinforce the meme
+      - obvious shareable surface (pfp generator, soundboard, etc.)
+    contract_likely: maybe
+    examples_to_study:
+      - Bonk, Popcat, WIF site treatments
