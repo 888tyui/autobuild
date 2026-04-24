@@ -16,6 +16,11 @@ const log = createLogger('deploy')
 // project_id -> { status, started_at, finished_at, url, log_tail, error, abortController }
 const deploys = new Map()
 const LOG_TAIL_BYTES = 16384
+// How long finished deploys stay in memory after completing. The
+// persisted state/{id}/deploy.json is the source of truth for the
+// dashboard's cycle summary; the in-memory entry exists only for
+// live progress polling.
+const RETENTION_MS = 10 * 60 * 1000
 
 export function getDeployStatus(projectId) {
   const e = deploys.get(projectId)
@@ -132,6 +137,16 @@ async function runDeployAgent(entry) {
   } catch (err) {
     log.warn(`failed to persist deploy.json: ${err.message}`)
   }
+  // Release the AbortController (holds listeners + ref) + schedule
+  // eviction from the Map after a short retention window. Persisted
+  // JSON is the source of truth from here on.
+  entry.abortController = null
+  setTimeout(() => {
+    if (deploys.get(entry.project_id) === entry) {
+      deploys.delete(entry.project_id)
+      log.info(`evicted finished deploy project_id=${entry.project_id}`)
+    }
+  }, RETENTION_MS).unref()
 }
 
 export async function runDeployToCompletion({ projectId }) {

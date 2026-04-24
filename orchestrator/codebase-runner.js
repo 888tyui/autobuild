@@ -15,6 +15,7 @@ const log = createLogger('codebase')
 
 const codebases = new Map()
 const LOG_TAIL_BYTES = 16384
+const RETENTION_MS = 10 * 60 * 1000
 
 export function getCodebaseStatus(projectId) {
   const e = codebases.get(projectId)
@@ -124,6 +125,13 @@ async function runCodebaseAgent(entry) {
   } catch (err) {
     log.warn(`failed to persist codebase.json: ${err.message}`)
   }
+  entry.abortController = null
+  setTimeout(() => {
+    if (codebases.get(entry.project_id) === entry) {
+      codebases.delete(entry.project_id)
+      log.info(`evicted finished codebase project_id=${entry.project_id}`)
+    }
+  }, RETENTION_MS).unref()
 }
 
 export async function runCodebaseToCompletion({ projectId }) {

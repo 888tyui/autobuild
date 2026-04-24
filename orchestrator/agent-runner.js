@@ -24,7 +24,9 @@ export async function runAgent(agentName, ctx, opts = {}) {
   const userPrompt = buildUserPrompt(agentName, ctx, slug)
   const startedAt = Date.now()
 
-  const messages = []
+  // Note: we deliberately do NOT accumulate message objects — long
+  // agents (web-build, codebase) can emit hundreds of megabytes across
+  // a run and the caller does not need the history. We count only.
   let toolUseCount = 0
   let textChars = 0
 
@@ -46,7 +48,6 @@ export async function runAgent(agentName, ctx, opts = {}) {
       prompt: userPrompt,
       options: queryOptions,
     })) {
-      messages.push(msg)
       if (msg.type === 'assistant' && Array.isArray(msg.message?.content)) {
         for (const block of msg.message.content) {
           if (block.type === 'tool_use') {
@@ -80,7 +81,7 @@ export async function runAgent(agentName, ctx, opts = {}) {
   log.ok(`done in ${elapsed}s (tool_use=${toolUseCount}, text=${textChars} chars)`)
   await appendCycleLog(ctx, `END ${agentName} ${elapsed}s tool_use=${toolUseCount}`)
 
-  return { agentName, status: 'ok', elapsed, toolUseCount, messages }
+  return { agentName, status: 'ok', elapsed, toolUseCount }
 }
 
 function buildUserPrompt(agentName, ctx, slug) {

@@ -49,7 +49,7 @@ function json(res, status, body) {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   })
   res.end(JSON.stringify(body))
@@ -330,7 +330,7 @@ export function startServer({ port }) {
     if (req.method === 'OPTIONS') {
       res.writeHead(204, {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+        'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
       })
       return res.end()
