@@ -48,6 +48,9 @@ Three possible artifacts, all under `projects/{slug}/`:
 7. Never hardcode `PORT` — Railway injects it. Next.js handles `$PORT`
    automatically; just confirm `start` does not pass `-p`.
 8. Add `railway.json` with `deploy.startCommand` matching `npm start`.
+   Also ensure `package.json` pins `"engines": { "node": ">=20" }`
+   (Web Build writes this at scaffold; confirm it's present, add it
+   if missing). Railway uses this to pick the build image.
 9. Add `.env.example` listing every env var the project reads. Never
    commit a real `.env`. `DATABASE_URL` references
    `${{Postgres.DATABASE_URL}}` in Railway settings (document this in

@@ -235,6 +235,17 @@ function nextFireApprox(expr) {
   return null
 }
 
+// Survive transient async errors from any subsystem — node-cron, the
+// HTTP server, the SDK iterator, file IO. Without these, a single
+// unhandled rejection anywhere in the long-lived process tree will
+// terminate the orchestrator and kill all in-flight cycles.
+process.on('unhandledRejection', (reason, promise) => {
+  log.error(`unhandledRejection: ${reason?.stack ?? reason}`)
+})
+process.on('uncaughtException', (err) => {
+  log.error(`uncaughtException: ${err.stack ?? err.message}`)
+})
+
 main().catch((err) => {
   console.error('[orchestrator] fatal:', err)
   process.exit(1)

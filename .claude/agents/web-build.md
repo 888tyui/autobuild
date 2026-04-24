@@ -43,7 +43,11 @@ step into a fiction, not read a pitch.
    (parallel race), wait — do not start without it.
 2. **Bootstrap**: scaffold Next.js 16 with `--app --typescript
    --tailwind --src-dir --use-npm --import-alias '@/*'`. Working dir
-   `projects/{slug}/`.
+   `projects/{slug}/`. Immediately after scaffolding, pin the Node
+   version by adding `"engines": { "node": ">=20" }` to
+   `package.json`. Railway reads `engines.node` to pick the build
+   image; without it, deploys can land on Node versions that drift
+   from the local dev install.
 3. **Brand wiring**: import `src/styles/brand-tokens.css` from
    `src/app/globals.css`. The CSS variables in the tokens file are
    source-named after the project's actual materials, not by role.

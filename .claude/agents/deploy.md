@@ -125,8 +125,10 @@ Provision the Railway project, deploy until the public URL serves a
    change strategy:
    - Look harder at the log; you may be misdiagnosing.
    - Try the inverse of your previous fix.
-   - Check the project against `package.json`'s `engines` field for
-     Node version mismatch.
+   - Check `package.json`'s `engines.node`. If missing, add
+     `"engines": { "node": ">=20" }` — the project targets Node 20
+     by default and drift to an older image is a common deploy
+     failure. If present but set to an older version, bump to 20.
    - As a last resort, simplify aggressively (remove a flaky
      dependency, replace a broken adapter with a stub) and try again.
    Only escalate to `blocked` when the failure is plainly

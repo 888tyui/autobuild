@@ -19,13 +19,21 @@ import { createLogger } from './logger.js'
 
 const log = createLogger('cleanup')
 
+const ORCHESTRATOR_PID = process.pid
+
 function listDescendants(pid) {
   return new Promise((resolve) => {
     psTree(pid, (err, children) => {
       if (err || !Array.isArray(children)) return resolve([])
       const pids = children
         .map((c) => Number(c.PID ?? c.pid))
-        .filter((p) => Number.isFinite(p) && p > 0 && p !== pid)
+        .filter(
+          (p) =>
+            Number.isFinite(p) &&
+            p > 0 &&
+            p !== pid &&
+            p !== ORCHESTRATOR_PID, // belt-and-suspenders — never kill self
+        )
       resolve(pids)
     })
   })

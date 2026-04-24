@@ -44,7 +44,11 @@ The launching prompt provides `project_id` and `slug`. Then read:
    `projects/{slug}/codebase/`. Use the language's idiomatic project
    layout (Cargo for Rust, package.json for TS, go.mod for Go,
    pyproject.toml + venv for Python). Write real code that compiles
-   and passes its own tests on the first try.
+   and passes its own tests on the first try. For TypeScript
+   projects, pin `"engines": { "node": ">=20" }` in package.json.
+   For Go, set `go 1.22` in go.mod. For Rust, let Cargo default to
+   the workspace toolchain. For Python, target 3.11+ in
+   pyproject.toml.
 
 4. **Plan the development arc.** After the final state is built,
    sit with the file tree and plan how a real developer would have
