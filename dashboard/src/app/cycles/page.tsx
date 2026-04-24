@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { api, type CycleSummary } from '@/lib/api'
 import { fmtRelative } from '@/lib/format'
+import { DevServerControl } from '@/components/DevServerControl'
 
 type Filter = 'all' | 'completed' | 'rejected' | 'in-progress' | 'stalled' | 'cancelled'
 type ModeFilter = 'all' | 'trend' | 'experimental'
@@ -130,6 +131,7 @@ export default function CyclesListPage() {
                 <th>mode</th>
                 <th>status</th>
                 <th>activity</th>
+                <th>dev</th>
               </tr>
             </thead>
             <tbody>
@@ -165,6 +167,13 @@ export default function CyclesListPage() {
                   </td>
                   <td className="mono" style={{ color: 'var(--text-dim)', fontSize: 12 }}>
                     {fmtRelative(c.last_activity_iso)}
+                  </td>
+                  <td>
+                    {c.slug ? (
+                      <DevServerControl projectId={c.project_id} hasProject={true} compact />
+                    ) : (
+                      <span className="pill mute">—</span>
+                    )}
                   </td>
                 </tr>
               ))}

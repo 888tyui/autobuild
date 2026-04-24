@@ -127,5 +127,69 @@ export const api = {
       project_error?: string
     }
   },
+  startDevServer: (projectId: string) =>
+    jpost<DevServerEntry>(`/api/cycles/${projectId}/dev-server`, {}),
+  stopDevServer: async (projectId: string) => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}/dev-server`, {
+      method: 'DELETE',
+      cache: 'no-store',
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      throw new Error(body.error ?? `stop dev server → ${res.status}`)
+    }
+    return (await res.json()) as { stopped: boolean; project_id: string }
+  },
+  getDevServer: async (projectId: string): Promise<DevServerEntry | null> => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}/dev-server`, {
+      cache: 'no-store',
+    })
+    if (res.status === 404) return null
+    if (!res.ok) throw new Error(`dev server → ${res.status}`)
+    return (await res.json()) as DevServerEntry
+  },
+  listDevServers: () => jget<{ dev_servers: DevServerEntry[] }>('/api/dev-servers'),
+  startDeploy: (projectId: string) =>
+    jpost<DeployStatus>(`/api/cycles/${projectId}/deploy`, {}),
+  getDeploy: async (projectId: string): Promise<DeployStatus | null> => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}/deploy`, {
+      cache: 'no-store',
+    })
+    if (res.status === 404) return null
+    if (!res.ok) throw new Error(`deploy → ${res.status}`)
+    return (await res.json()) as DeployStatus
+  },
+  cancelDeploy: async (projectId: string) => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}/deploy`, {
+      method: 'DELETE',
+      cache: 'no-store',
+    })
+    if (!res.ok && res.status !== 404) throw new Error(`cancel deploy → ${res.status}`)
+    return (await res.json()) as { cancelled: boolean }
+  },
   apiBase: API_BASE,
+}
+
+export type DevServerEntry = {
+  project_id: string
+  slug: string
+  port: number
+  pid: number
+  started_at: string
+  ready: boolean
+  url: string | null
+  log_tail: string
+  error: string | null
+}
+
+export type DeployStatus = {
+  project_id: string
+  slug: string
+  status: 'running' | 'success' | 'partial' | 'blocked' | 'failed' | 'finished' | 'cancelled'
+  started_at: string
+  finished_at: string | null
+  url: string | null
+  final_status_word: string | null
+  log_tail: string
+  error: string | null
 }

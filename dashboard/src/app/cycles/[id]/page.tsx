@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
 import { api, type CycleDetail, type Status } from '@/lib/api'
 import { fmtBytes, fmtDateTime, fmtRelative } from '@/lib/format'
+import { DevServerControl } from '@/components/DevServerControl'
+import { DeployControl } from '@/components/DeployControl'
 
 export default function CycleDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
@@ -138,6 +140,22 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
           <span className="meta">{fmtRelative(detail.last_activity_iso)}</span>
         </div>
       </div>
+
+      {detail.project_path && (
+        <div className="card" style={{ marginBottom: 24 }}>
+          <h2>Dev server / Deploy</h2>
+          <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
+            <span style={{ color: 'var(--text-faint)', fontFamily: 'var(--mono)', fontSize: 11 }}>
+              dev:
+            </span>
+            <DevServerControl projectId={detail.project_id} hasProject={true} />
+            <span style={{ color: 'var(--text-faint)', fontFamily: 'var(--mono)', fontSize: 11 }}>
+              project at <span style={{ color: 'var(--text)' }}>{detail.project_path}</span>
+            </span>
+          </div>
+          <DeployControl projectId={detail.project_id} hasProject={true} />
+        </div>
+      )}
 
       <div className="row row-2" style={{ marginBottom: 24 }}>
         <div className="card">

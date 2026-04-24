@@ -6,6 +6,7 @@ import { api, type Status, type CycleSummary } from '@/lib/api'
 import { fmtDateTime, fmtRelative } from '@/lib/format'
 import { CycleProgress } from '@/components/CycleProgress'
 import { Controls } from '@/components/Controls'
+import { DevServerControl } from '@/components/DevServerControl'
 
 export default function OverviewPage() {
   const [status, setStatus] = useState<Status | null>(null)
@@ -156,6 +157,7 @@ function RecentCyclesTable({ cycles }: { cycles: CycleSummary[] }) {
           <th>mode</th>
           <th>status</th>
           <th>activity</th>
+          <th>dev</th>
         </tr>
       </thead>
       <tbody>
@@ -185,6 +187,13 @@ function RecentCyclesTable({ cycles }: { cycles: CycleSummary[] }) {
             </td>
             <td className="mono" style={{ color: 'var(--text-dim)', fontSize: 12 }}>
               {fmtRelative(c.last_activity_iso)}
+            </td>
+            <td>
+              {c.slug ? (
+                <DevServerControl projectId={c.project_id} hasProject={true} compact />
+              ) : (
+                <span className="pill mute">—</span>
+              )}
             </td>
           </tr>
         ))}

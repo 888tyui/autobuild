@@ -18,6 +18,18 @@ import path from 'node:path'
 import { URL } from 'node:url'
 import { ROOT_DIR } from './utils/context.js'
 import { readStatus, setMode, listActiveCycleIds } from './utils/status-store.js'
+import {
+  startDevServer,
+  stopDevServer,
+  getDevServer,
+  listDevServers,
+} from './dev-server-manager.js'
+import {
+  startDeploy,
+  getDeployStatus,
+  cancelDeploy,
+  listDeploys,
+} from './deploy-runner.js'
 
 const STATE_DIR = path.join(ROOT_DIR, 'state')
 const PROJECTS_DIR = path.join(ROOT_DIR, 'projects')
@@ -351,6 +363,68 @@ export function startServer({ port }) {
         const result = await cancelHandler({ projectId })
         if (!result.cancelled) return json(res, 404, { error: 'cycle not active or not cancellable' })
         return json(res, 202, result)
+      }
+
+      // Dev server controls — start, status, stop per cycle
+      const devMatch = p.match(/^\/api\/cycles\/([^/]+)\/dev-server$/)
+      if (devMatch) {
+        const projectId = devMatch[1]
+        if (!PROJECT_ID_RE.test(projectId)) return json(res, 400, { error: 'invalid project_id' })
+
+        if (req.method === 'POST') {
+          // Need slug — read it from the cycle's spec
+          const spec = await safeReadJson(path.join(STATE_DIR, projectId, 'project-spec.json'))
+          const slug = spec?.slug
+          if (!slug) return json(res, 400, { error: 'cycle has no slug — nothing to run' })
+          try {
+            const entry = await startDevServer({ projectId, slug })
+            return json(res, 202, entry)
+          } catch (err) {
+            return json(res, 500, { error: err.message })
+          }
+        }
+        if (req.method === 'GET') {
+          const entry = getDevServer(projectId)
+          if (!entry) return json(res, 404, { error: 'not running' })
+          return json(res, 200, entry)
+        }
+        if (req.method === 'DELETE') {
+          const result = await stopDevServer({ projectId })
+          return json(res, 200, result)
+        }
+      }
+
+      if (p === '/api/dev-servers' && req.method === 'GET') {
+        return json(res, 200, { dev_servers: listDevServers() })
+      }
+
+      // Deploy controls
+      const deployMatch = p.match(/^\/api\/cycles\/([^/]+)\/deploy$/)
+      if (deployMatch) {
+        const projectId = deployMatch[1]
+        if (!PROJECT_ID_RE.test(projectId)) return json(res, 400, { error: 'invalid project_id' })
+
+        if (req.method === 'POST') {
+          try {
+            const result = await startDeploy({ projectId })
+            return json(res, 202, result)
+          } catch (err) {
+            return json(res, 400, { error: err.message })
+          }
+        }
+        if (req.method === 'GET') {
+          const status = getDeployStatus(projectId)
+          if (!status) return json(res, 404, { error: 'no deploy' })
+          return json(res, 200, status)
+        }
+        if (req.method === 'DELETE') {
+          const ok = cancelDeploy(projectId)
+          return json(res, ok ? 202 : 404, { cancelled: ok })
+        }
+      }
+
+      if (p === '/api/deploys' && req.method === 'GET') {
+        return json(res, 200, { deploys: listDeploys() })
       }
 
       const deleteMatch = p.match(/^\/api\/cycles\/([^/]+)$/)
