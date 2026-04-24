@@ -232,6 +232,12 @@ export default function CycleDetailPage({ params }: { params: Promise<{ id: stri
                 <dd className="mono">{detail.project_path}</dd>
               </>
             )}
+            {detail.marketing_path && (
+              <>
+                <dt>marketing kit</dt>
+                <dd className="mono">{detail.marketing_path}</dd>
+              </>
+            )}
           </dl>
         </div>
 

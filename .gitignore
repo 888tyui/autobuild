@@ -23,6 +23,7 @@ pnpm-debug.log*
 # Runtime / cycle artifacts — these are reproducible from the system itself
 state/
 projects/
+marketing/
 
 # Environment
 .env

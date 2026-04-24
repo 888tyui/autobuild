@@ -188,6 +188,16 @@ async function summarizeCycle(projectId, dir) {
     }
   }
 
+  // Marketing kit path (if the collector has run).
+  let marketing_path = null
+  if (spec?.slug) {
+    const mkDir = path.join(ROOT_DIR, 'marketing', spec.slug)
+    try {
+      const st = await fs.stat(mkDir)
+      if (st.isDirectory()) marketing_path = path.relative(ROOT_DIR, mkDir)
+    } catch { /* not collected yet */ }
+  }
+
   return {
     project_id: projectId,
     cycle_mode: mode,
@@ -207,6 +217,7 @@ async function summarizeCycle(projectId, dir) {
     deploy_status: deployInfo?.status ?? null,
     codebase_url: codebaseInfo?.repo_url ?? null,
     codebase_language: codebaseInfo?.language ?? null,
+    marketing_path,
     preview_image,
   }
 }

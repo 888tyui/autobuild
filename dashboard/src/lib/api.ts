@@ -91,6 +91,7 @@ export type CycleSummary = {
   deploy_status: string | null
   codebase_url: string | null
   codebase_language: string | null
+  marketing_path: string | null
   preview_image: string | null
 }
 

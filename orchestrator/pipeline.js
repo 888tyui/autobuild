@@ -9,6 +9,7 @@ import {
 } from './utils/status-store.js'
 import { runDeployToCompletion } from './deploy-runner.js'
 import { runCodebaseToCompletion } from './codebase-runner.js'
+import { collectMarketingKit } from './marketing-collector.js'
 
 const log = createLogger('pipeline')
 
@@ -28,6 +29,7 @@ function makeStages(mode) {
     // mark the cycle as failed; the cycle is already past its gates.
     { kind: 'soft', runner: 'deploy' },
     { kind: 'soft', runner: 'codebase' },
+    { kind: 'soft', runner: 'marketing-kit' },
   ]
 }
 
@@ -126,6 +128,8 @@ export async function runPipeline(ctx) {
           await runDeployToCompletion({ projectId: ctx.projectId })
         } else if (stage.runner === 'codebase') {
           await runCodebaseToCompletion({ projectId: ctx.projectId })
+        } else if (stage.runner === 'marketing-kit') {
+          await collectMarketingKit({ projectId: ctx.projectId })
         } else {
           throw new Error(`unknown soft runner: ${stage.runner}`)
         }
