@@ -30,6 +30,12 @@ import {
   cancelDeploy,
   listDeploys,
 } from './deploy-runner.js'
+import {
+  startCodebase,
+  getCodebaseStatus,
+  cancelCodebase,
+  listCodebases,
+} from './codebase-runner.js'
 
 const STATE_DIR = path.join(ROOT_DIR, 'state')
 const PROJECTS_DIR = path.join(ROOT_DIR, 'projects')
@@ -425,6 +431,35 @@ export function startServer({ port }) {
 
       if (p === '/api/deploys' && req.method === 'GET') {
         return json(res, 200, { deploys: listDeploys() })
+      }
+
+      // Codebase controls — same lifecycle as deploy
+      const codebaseMatch = p.match(/^\/api\/cycles\/([^/]+)\/codebase$/)
+      if (codebaseMatch) {
+        const projectId = codebaseMatch[1]
+        if (!PROJECT_ID_RE.test(projectId)) return json(res, 400, { error: 'invalid project_id' })
+
+        if (req.method === 'POST') {
+          try {
+            const result = await startCodebase({ projectId })
+            return json(res, 202, result)
+          } catch (err) {
+            return json(res, 400, { error: err.message })
+          }
+        }
+        if (req.method === 'GET') {
+          const status = getCodebaseStatus(projectId)
+          if (!status) return json(res, 404, { error: 'no codebase build' })
+          return json(res, 200, status)
+        }
+        if (req.method === 'DELETE') {
+          const ok = cancelCodebase(projectId)
+          return json(res, ok ? 202 : 404, { cancelled: ok })
+        }
+      }
+
+      if (p === '/api/codebases' && req.method === 'GET') {
+        return json(res, 200, { codebases: listCodebases() })
       }
 
       const deleteMatch = p.match(/^\/api\/cycles\/([^/]+)$/)

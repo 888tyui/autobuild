@@ -167,6 +167,24 @@ export const api = {
     if (!res.ok && res.status !== 404) throw new Error(`cancel deploy → ${res.status}`)
     return (await res.json()) as { cancelled: boolean }
   },
+  startCodebase: (projectId: string) =>
+    jpost<CodebaseStatus>(`/api/cycles/${projectId}/codebase`, {}),
+  getCodebase: async (projectId: string): Promise<CodebaseStatus | null> => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}/codebase`, {
+      cache: 'no-store',
+    })
+    if (res.status === 404) return null
+    if (!res.ok) throw new Error(`codebase → ${res.status}`)
+    return (await res.json()) as CodebaseStatus
+  },
+  cancelCodebase: async (projectId: string) => {
+    const res = await fetch(`${API_BASE}/api/cycles/${projectId}/codebase`, {
+      method: 'DELETE',
+      cache: 'no-store',
+    })
+    if (!res.ok && res.status !== 404) throw new Error(`cancel codebase → ${res.status}`)
+    return (await res.json()) as { cancelled: boolean }
+  },
   apiBase: API_BASE,
 }
 
@@ -190,6 +208,20 @@ export type DeployStatus = {
   finished_at: string | null
   url: string | null
   final_status_word: string | null
+  log_tail: string
+  error: string | null
+}
+
+export type CodebaseStatus = {
+  project_id: string
+  slug: string
+  status: 'running' | 'success' | 'finished' | 'failed' | 'cancelled'
+  started_at: string
+  finished_at: string | null
+  language: 'rust' | 'typescript' | 'go' | 'python' | null
+  repo_url: string | null
+  commit_count: number | null
+  range: string | null
   log_tail: string
   error: string | null
 }

@@ -22,6 +22,7 @@ function makeStages(mode) {
     { kind: 'parallel', agents: ['web-build', 'product'] },
     { kind: 'gate', agent: 'frontend-verify' },
     { kind: 'single', agent: 'cm' },
+    { kind: 'single', agent: 'codebase' },
   ]
 }
 
