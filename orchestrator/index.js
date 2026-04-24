@@ -14,6 +14,7 @@ import {
   requestCancel,
 } from './utils/status-store.js'
 import { startServer, registerTriggerHandler, registerCancelHandler } from './server.js'
+import { reapDescendants, reapDescendantsSync } from './utils/process-cleanup.js'
 
 const log = createLogger('orchestrator')
 
@@ -134,10 +135,22 @@ async function main() {
       throw new Error(`max concurrent cycles reached (${active}/${cap})`)
     }
     const abortController = new AbortController()
-    const promise = runOneCycle({ cycleMode, abortController }).catch((err) => {
-      log.error(`cycle failed: ${err.stack ?? err.message}`)
-      return { projectId: null, result: { status: 'failed', error: err.message } }
-    })
+    const promise = runOneCycle({ cycleMode, abortController })
+      .catch((err) => {
+        log.error(`cycle failed: ${err.stack ?? err.message}`)
+        return { projectId: null, result: { status: 'failed', error: err.message } }
+      })
+      .finally(async () => {
+        // Sweep orphaned grand-children. SDK abort only kills its direct
+        // child; npm/next/playwright/cargo/railway subprocesses started
+        // via the agent's Bash tool can outlive the cycle on Windows.
+        try {
+          const killed = await reapDescendants({ reason: 'cycle-end' })
+          if (killed > 0) log.warn(`reaped ${killed} leftover subprocess(es) after cycle`)
+        } catch (err) {
+          log.warn(`reap on cycle end failed: ${err.message}`)
+        }
+      })
     return { abortController, promise }
   }
 
@@ -205,11 +218,17 @@ async function main() {
     }
   }
 
-  process.on('SIGINT', () => {
-    log.info('SIGINT received, stopping cron and exiting')
-    task.stop()
-    process.exit(0)
-  })
+  const shutdown = (sig) => {
+    log.info(`${sig} received, stopping cron and reaping subprocesses`)
+    try { task.stop() } catch { /* ignore */ }
+    // Best-effort synchronous reap (fire-and-forget) — our own exit
+    // gives them a window to die before Windows cleans them anyway.
+    reapDescendantsSync()
+    // Give the reap a moment, then exit.
+    setTimeout(() => process.exit(0), 250).unref()
+  }
+  process.on('SIGINT', () => shutdown('SIGINT'))
+  process.on('SIGTERM', () => shutdown('SIGTERM'))
 }
 
 function nextFireApprox(expr) {
