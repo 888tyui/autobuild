@@ -46,10 +46,12 @@ step into a fiction, not read a pitch.
    `projects/{slug}/`.
 3. **Brand wiring**: import `src/styles/brand-tokens.css` from
    `src/app/globals.css`. The CSS variables in the tokens file
-   already use source-named keys (e.g. `--paper-newsprint`). In
-   Tailwind config, alias these into role names *if you want*, but
-   reference the source names in components so the designer's color
-   logic survives.
+   already use source-named keys derived from the project's actual
+   materials (e.g. `--anodize-blue`, `--enamel-cream`,
+   `--phosphor-amber`, `--lacquer-vermillion` — names match whatever
+   substrate the brand picked). In Tailwind config, alias these into
+   role names *if you want*, but reference the source names in
+   components so the designer's color logic survives.
 4. **Wallet adapter**: install
    `@solana/wallet-adapter-react @solana/wallet-adapter-react-ui
    @solana/wallet-adapter-wallets @solana/web3.js`. Wrap the App

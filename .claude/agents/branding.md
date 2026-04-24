@@ -42,7 +42,12 @@ enough that another designer could ship the project from it.
    - the fetish object's role and how it appears across the site
    - the world's conventions (what kind of UI it implies, what kind
      of typographic structure, what kind of metadata)
-   - the texture (paper? halftone? raster? grain? scanline?)
+   - the texture — what the world's substrate actually is. Glass?
+     Brushed steel? Enamel? Vinyl? Ceramic? Lacquer? Concrete? Vacuum
+     plastic? Cathode glow? Paper is one possibility — pick it only if
+     the world genuinely lives on a paper surface. Defaulting to
+     paper / halftone / riso / scanlines when the world is not a
+     printed thing has become the AI-tasteful safe choice; refuse it.
    - the color philosophy (named colors from real sources — pigments,
      paints, photographs, signage — never "primary blue" or "neutral
      gray-900")
