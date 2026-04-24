@@ -35,6 +35,7 @@ function parseArgs(argv) {
     else if (a === '--mode') out.cycleMode = argv[++i]
     else if (a === '--port') out.port = Number(argv[++i])
     else if (a === '--max-concurrent') out.maxConcurrent = Number(argv[++i])
+    else if (a === '--instance') out.instance = argv[++i]
     else if (a === '--help' || a === '-h') out.help = true
   }
   return out
@@ -91,8 +92,18 @@ async function main() {
   }
 
   const expr = args.cron ?? CRON_EXPR
-  const port = args.port ?? HTTP_PORT
   const max = args.maxConcurrent ?? MAX_CONCURRENT
+  const instanceName = args.instance ?? process.env.AUTOBUILD_INSTANCE ?? 'autobuild'
+
+  // Distinctive process title so two side-by-side installations are
+  // identifiable in Task Manager / ps. Also prevents a user from
+  // killing 'node.exe' and accidentally taking down all instances.
+  try { process.title = `${instanceName}-orchestrator` } catch { /* ignore */ }
+
+  // Port resolution — start with the requested port, fall back to
+  // the next 9 in case a sibling instance already owns it.
+  const basePort = args.port ?? HTTP_PORT
+  let port = basePort
 
   // CLI one-shot path
   if (args.runMode === 'once' || args.dryRun) {
@@ -158,9 +169,6 @@ async function main() {
   if (!args.noServer) {
     registerTriggerHandler(async ({ cycleMode }) => {
       const { promise } = startManagedCycle({ cycleMode })
-      // Resolve the project_id once the runPipeline call has created the
-      // context. We give it a brief window — the dashboard will discover
-      // the new cycle via /api/status polling regardless.
       const peek = await Promise.race([
         promise,
         new Promise((r) => setTimeout(() => r(null), 500)),
@@ -177,8 +185,32 @@ async function main() {
       const cancelled = requestCancel(projectId)
       return { cancelled, project_id: projectId }
     })
-    await startServer({ port })
-    log.info(`HTTP API listening on http://localhost:${port}`)
+
+    // Resilient bind — if the preferred port is held by a sibling
+    // instance, try the next 9. Do NOT exit the process on failure.
+    let bound = false
+    for (let attempt = 0; attempt < 10; attempt++) {
+      const tryPort = basePort + attempt
+      try {
+        await startServer({ port: tryPort })
+        port = tryPort
+        bound = true
+        if (attempt > 0) {
+          log.warn(`port ${basePort} was in use; bound to ${tryPort} instead`)
+        }
+        break
+      } catch (err) {
+        if (err.code !== 'EADDRINUSE') {
+          log.error(`HTTP server failed to start on ${tryPort}: ${err.message}`)
+          break
+        }
+      }
+    }
+    if (!bound) {
+      log.error(`could not bind any port in [${basePort}, ${basePort + 9}] — running without HTTP API`)
+    } else {
+      log.info(`HTTP API listening on http://localhost:${port} (instance=${instanceName})`)
+    }
   }
 
   // Cron scheduler — fires regardless of running cycles, only paused by mode

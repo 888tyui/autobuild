@@ -508,9 +508,17 @@ export function startServer({ port }) {
     }
   })
 
-  return new Promise((resolve) => {
-    server.listen(port, () => {
+  return new Promise((resolve, reject) => {
+    const onError = (err) => {
+      server.off('listening', onListening)
+      reject(err)
+    }
+    const onListening = () => {
+      server.off('error', onError)
       resolve(server)
-    })
+    }
+    server.once('error', onError)
+    server.once('listening', onListening)
+    server.listen(port)
   })
 }
