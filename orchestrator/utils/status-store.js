@@ -31,7 +31,11 @@ const cancelHooks = new Map()
 let writeQueue = Promise.resolve()
 async function flush() {
   // Serialize writes so concurrent cycles don't clobber each other.
-  writeQueue = writeQueue.then(async () => {
+  // IMPORTANT: recover from prior rejections via .catch(() => {}) so a
+  // single disk-write failure does not poison the chain and break
+  // every subsequent flush (which would cascade into unhandled
+  // rejections at every call site).
+  writeQueue = writeQueue.catch(() => {}).then(async () => {
     state.updated_at = new Date().toISOString()
     await fs.mkdir(path.dirname(STATUS_PATH), { recursive: true })
     await fs.writeFile(STATUS_PATH, JSON.stringify(state, null, 2), 'utf8')

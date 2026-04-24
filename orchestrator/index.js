@@ -152,9 +152,17 @@ async function main() {
         return { projectId: null, result: { status: 'failed', error: err.message } }
       })
       .finally(async () => {
-        // Sweep orphaned grand-children. SDK abort only kills its direct
-        // child; npm/next/playwright/cargo/railway subprocesses started
-        // via the agent's Bash tool can outlive the cycle on Windows.
+        // Critical: only reap when NO other cycles are in flight.
+        // A whole-tree reap enumerates every descendant of the
+        // orchestrator — which on Windows includes a concurrent
+        // cycle's npm/next/playwright subprocesses. Killing those
+        // mid-cycle crashes the other cycle and can cascade into
+        // orchestrator-side unhandled errors. When any cycle is
+        // still running, defer reap to shutdown time.
+        if (activeCount() > 0) {
+          log.info(`deferring reap — ${activeCount()} cycle(s) still active`)
+          return
+        }
         try {
           const killed = await reapDescendants({ reason: 'cycle-end' })
           if (killed > 0) log.warn(`reaped ${killed} leftover subprocess(es) after cycle`)
@@ -271,11 +279,20 @@ function nextFireApprox(expr) {
 // HTTP server, the SDK iterator, file IO. Without these, a single
 // unhandled rejection anywhere in the long-lived process tree will
 // terminate the orchestrator and kill all in-flight cycles.
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
   log.error(`unhandledRejection: ${reason?.stack ?? reason}`)
 })
 process.on('uncaughtException', (err) => {
   log.error(`uncaughtException: ${err.stack ?? err.message}`)
+})
+// Diagnostic — if the orchestrator ever exits, record why in the log
+// before the stream closes. Helps distinguish OS-level kills
+// (OOM, power off) from soft shutdown via SIGINT / SIGTERM.
+process.on('beforeExit', (code) => {
+  log.warn(`beforeExit code=${code}`)
+})
+process.on('exit', (code) => {
+  log.warn(`exit code=${code}`)
 })
 
 main().catch((err) => {
