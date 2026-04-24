@@ -31,28 +31,16 @@ export async function runAgent(agentName, ctx, opts = {}) {
   try {
     const maxTurns = opts.maxTurns ?? MAX_TURNS_OVERRIDES[agentName] ?? DEFAULT_MAX_TURNS
 
-    // Agent files document the model in Claude Code's shorthand
-    // `claude-opus-4-7[1m]`. The bracket suffix is a 1M-context flag, not
-    // part of the upstream model ID. Strip it and set the beta header
-    // separately so we work with both SDK transports.
-    let modelForSdk = agent.model
-    let needsContext1m = false
-    if (typeof agent.model === 'string' && agent.model.includes('[1m]')) {
-      modelForSdk = agent.model.replace(/\[1m\]/g, '').trim()
-      needsContext1m = true
-    }
-
     const queryOptions = {
       systemPrompt: agent.body,
       allowedTools: agent.tools,
       cwd: ctx.rootDir,
-      model: modelForSdk,
+      model: agent.model,
       settingSources: ['project'],
       env: process.env,
     }
     if (maxTurns !== undefined) queryOptions.maxTurns = maxTurns
     if (ctx.abortController) queryOptions.abortController = ctx.abortController
-    if (needsContext1m) queryOptions.betas = ['context-1m-2025-08-07']
 
     for await (const msg of query({
       prompt: userPrompt,
